@@ -13,9 +13,16 @@ services:
     volumes:
       - ./garminconnect-tokens:/home/appuser/.garminconnect # (persistent tokens storage - garminconnect-tokens folder must be owned by 1000:1000) - should be './garminconnect-tokens:/root/.garminconnect' instead if you are using user: root
 
+    # Secrets (Garmin credentials, Oura PAT, timezone, etc.) are loaded from
+    # override-default-vars.env in the repo root. Copy the template from
+    # docs/ubuntu-deployment.md and fill in your values before `docker compose up`.
+    env_file:
+      - override-default-vars.env
+
     # Legacy service name was `garmin-fetch-data`. If upgrading an existing stack,
     # `docker compose down` the old service before `docker compose up -d`.
     environment:
+      # --- InfluxDB connection (internal Docker network, not secret) ---
       - INFLUXDB_HOST=influxdb
       - INFLUXDB_PORT=8086 # Influxdb V3 maps to 8181 instead of 8086 of V1
       - INFLUXDB_USERNAME=influxdb_user # user should have read/write access to INFLUXDB_DATABASE (Required for influxdb 1.x, ignore for influxdb 3.x - set the 3.x specific variables)
@@ -23,21 +30,11 @@ services:
       - INFLUXDB_DATABASE=GarminStats
       - GARMINCONNECT_IS_CN=False # Set this to True if you are in mainland China or use Garmin-cn (Default False)
       #####################################################################################
-      # - GARMINCONNECT_EMAIL=your_garminconnect_email # optional, read the setup docs. (remove or comment out this line altogether if not used)
-      # - GARMINCONNECT_BASE64_PASSWORD=your_base64_encoded_garminconnect_password # optional, must be Base64 encoded, read setup docs. (remove or comment out this line altogether if not used)
-      #####################################################################################
-      # Oura Ring integration — create a Personal Access Token at
-      # https://cloud.ouraring.com/personal-access-tokens and paste it below.
-      # Leave OURA_PERSONAL_ACCESS_TOKEN empty to disable Oura entirely.
-      #####################################################################################
-      - OURA_PERSONAL_ACCESS_TOKEN= # your Oura Cloud v2 Personal Access Token
-      - OURA_ENABLED=True           # set to False to disable Oura even if a token is set
-      #####################################################################################
-      # Cross-source analytics layer (the Unified* measurements + SourceDiscrepancy
-      # that power the Multi-Source Health dashboard).
-      #####################################################################################
-      - ENABLE_UNIFIED_MEASUREMENTS=True
-      - DISCREPANCY_LOOKBACK_DAYS=7
+      # GARMINCONNECT_EMAIL, GARMINCONNECT_BASE64_PASSWORD, OURA_PERSONAL_ACCESS_TOKEN,
+      # OURA_ENABLED, ENABLE_UNIFIED_MEASUREMENTS, DISCREPANCY_LOOKBACK_DAYS, and
+      # USER_TIMEZONE are all loaded via env_file above (override-default-vars.env).
+      # Do NOT duplicate them here — values set in this block take precedence over
+      # env_file and will silently blank out your secrets.
       #####################################################################################
       # The following ENV variables are required only if you are using influxdb V3 (You won't have to set the above )
       #####################################################################################
