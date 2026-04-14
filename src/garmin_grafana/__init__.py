@@ -1,2 +1,3 @@
 def main():
-    from . import garmin_fetch
+    from . import orchestrator
+    orchestrator.main()

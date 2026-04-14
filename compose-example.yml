@@ -1,15 +1,20 @@
 # There is support for influxdb v3 (core) OSS, but it's highly recommended to use Influxdb 1.x versions with this project. 
 
 services:
-  garmin-fetch-data:
+  health-fetch-data:
     restart: unless-stopped
-    image: thisisarpanghosh/garmin-fetch-data:latest
-    container_name: garmin-fetch-data
+    # Build from local Dockerfile so orchestrator + Oura support are included.
+    # Replace with a published image once one is available.
+    build: .
+    container_name: health-fetch-data
     # user: root # Runs the container as root user, uncomment this line if you are getting permission issues which can't be resolved otherwise. For this, you also need to change the below volume mount from './garminconnect-tokens:/home/appuser/.garminconnect' to './garminconnect-tokens:/root/.garminconnect' to ensure the token files persist during container rebuilding. 
     depends_on:
       - influxdb
     volumes:
-      - ./garminconnect-tokens:/home/appuser/.garminconnect # (persistent tokens storage - garminconnect-tokens folder must be owned by 1000:1000) - should be './garminconnect-tokens:/root/.garminconnect' instead if you are using using user: root
+      - ./garminconnect-tokens:/home/appuser/.garminconnect # (persistent tokens storage - garminconnect-tokens folder must be owned by 1000:1000) - should be './garminconnect-tokens:/root/.garminconnect' instead if you are using user: root
+
+    # Legacy service name was `garmin-fetch-data`. If upgrading an existing stack,
+    # `docker compose down` the old service before `docker compose up -d`.
     environment:
       - INFLUXDB_HOST=influxdb
       - INFLUXDB_PORT=8086 # Influxdb V3 maps to 8181 instead of 8086 of V1
@@ -20,6 +25,19 @@ services:
       #####################################################################################
       # - GARMINCONNECT_EMAIL=your_garminconnect_email # optional, read the setup docs. (remove or comment out this line altogether if not used)
       # - GARMINCONNECT_BASE64_PASSWORD=your_base64_encoded_garminconnect_password # optional, must be Base64 encoded, read setup docs. (remove or comment out this line altogether if not used)
+      #####################################################################################
+      # Oura Ring integration — create a Personal Access Token at
+      # https://cloud.ouraring.com/personal-access-tokens and paste it below.
+      # Leave OURA_PERSONAL_ACCESS_TOKEN empty to disable Oura entirely.
+      #####################################################################################
+      - OURA_PERSONAL_ACCESS_TOKEN= # your Oura Cloud v2 Personal Access Token
+      - OURA_ENABLED=True           # set to False to disable Oura even if a token is set
+      #####################################################################################
+      # Cross-source analytics layer (the Unified* measurements + SourceDiscrepancy
+      # that power the Multi-Source Health dashboard).
+      #####################################################################################
+      - ENABLE_UNIFIED_MEASUREMENTS=True
+      - DISCREPANCY_LOOKBACK_DAYS=7
       #####################################################################################
       # The following ENV variables are required only if you are using influxdb V3 (You won't have to set the above )
       #####################################################################################
