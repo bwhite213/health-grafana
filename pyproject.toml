@@ -1,6 +1,6 @@
 [project]
-name = "health-grafana"
-version = "0.4.0"
+name = "garmin-grafana"
+version = "0.3.0"
 description = "Multi-source personal health data (Garmin + Oura) into InfluxDB + Grafana, with cross-source consolidation and discrepancy detection."
 readme = "README.md"
 requires-python = "==3.13.*"
