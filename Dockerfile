@@ -28,4 +28,4 @@ COPY --chown=appuser:appuser src /app/
 
 USER appuser
 
-CMD ["python", "garmin_grafana/garmin_fetch.py"]
+CMD ["python", "-m", "garmin_grafana.orchestrator"]

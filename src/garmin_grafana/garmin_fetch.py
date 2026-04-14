@@ -71,6 +71,7 @@ FORCE_REPROCESS_ACTIVITIES = False if os.getenv("FORCE_REPROCESS_ACTIVITIES") in
 USER_TIMEZONE = os.getenv("USER_TIMEZONE", "") # optional, fetches timezone info from last activity automatically if left blank
 PARSED_ACTIVITY_ID_LIST = []
 IGNORE_ERRORS = True if os.getenv("IGNORE_ERRORS") in ['True', 'true', 'TRUE','t', 'T', 'yes', 'Yes', 'YES', '1'] else False
+ENABLE_UNIFIED_MEASUREMENTS = False if os.getenv("ENABLE_UNIFIED_MEASUREMENTS") in ['False','false','FALSE','f','F','no','No','NO','0'] else True # Emits Unified* mirror points for the Multi-Source Health dashboard (Garmin + Oura cross-source analytics layer)
 
 # %%
 for handler in logging.root.handlers[:]:
@@ -1504,6 +1505,34 @@ def daily_fetch_write(date_str):
         write_points_to_influxdb(get_solar_intensity(date_str))
     if 'lifestyle' in FETCH_SELECTION:
         write_points_to_influxdb(get_lifestyle_data(date_str))
+
+    # Emit Unified* mirror points for cross-source dashboards. This is a
+    # deliberately additive call — if the import or fetch fails we log and
+    # continue so the original per-measurement Garmin data is never blocked.
+    if ENABLE_UNIFIED_MEASUREMENTS:
+        try:
+            from .sources import unified_schema
+            daily_stats_json = None
+            sleep_json = None
+            try:
+                daily_stats_json = garmin_obj.get_stats(date_str)
+            except Exception as err:
+                logging.debug(f"Unified mirror: unable to refetch daily stats for {date_str}: {err}")
+            try:
+                sleep_json = garmin_obj.get_sleep_data(date_str)
+            except Exception as err:
+                logging.debug(f"Unified mirror: unable to refetch sleep data for {date_str}: {err}")
+            unified_points = unified_schema.garmin_to_unified(
+                date_str=date_str,
+                device_name=GARMIN_DEVICENAME,
+                database_name=INFLUXDB_DATABASE,
+                daily_stats=daily_stats_json,
+                sleep_data=sleep_json,
+            )
+            if unified_points:
+                write_points_to_influxdb(unified_points)
+        except Exception as err:
+            logging.warning(f"Unified mirror emit failed for {date_str}: {err}")
 
 
 # %%
