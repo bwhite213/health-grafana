@@ -260,8 +260,7 @@ MARKER_KEY = "_normalRangeMetric"
 def _iter_panels(dashboard: dict[str, Any]):
     for panel in dashboard.get("panels", []) or []:
         yield panel
-        for sub in panel.get("panels", []) or []:
-            yield sub
+        yield from panel.get("panels", []) or []
 
 
 def _apply_to_panel(panel: dict, resolved: dict[str, dict]) -> bool:

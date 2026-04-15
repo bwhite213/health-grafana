@@ -47,6 +47,27 @@ jobs:
         run: uv run python -m compileall -q src/garmin_grafana
 
       # ---------------------------------------------------------------------
+      # 2a. Ruff lint
+      # ---------------------------------------------------------------------
+      # Targets the multi-source code we own. The upstream-forked files
+      # (garmin_fetch.py, garmin_bulk_importer.py, fit_activity_importer.py,
+      # influxdb_exporter.py) are excluded in pyproject.toml's [tool.ruff]
+      # block so we don't spam ourselves with style complaints about code
+      # that wasn't written in this fork.
+      - name: Ruff lint
+        run: uvx --from 'ruff==0.6.9' ruff check .
+
+      # ---------------------------------------------------------------------
+      # 2b. Live-credentials scanner
+      # ---------------------------------------------------------------------
+      # Blocks accidental commits of real Garmin / Oura / email values.
+      # The same script is wired into .pre-commit-config.yaml for local
+      # enforcement — this CI step is the fail-safe for contributors who
+      # haven't run `pre-commit install`.
+      - name: Check for leaked secrets
+        run: uv run python scripts/check_secrets.py
+
+      # ---------------------------------------------------------------------
       # 3. Dashboard JSON validation
       # ---------------------------------------------------------------------
       # Grafana silently ignores dashboards with malformed JSON. We parse
@@ -250,3 +271,29 @@ jobs:
 
           print("unified_schema smoke test passed")
           PY
+
+  docker-build:
+    name: Docker build smoke test
+    runs-on: ubuntu-latest
+    # Parallel with `validate` — this job only needs git + docker and has
+    # no Python dep on the lint job. Fails the PR if the multi-stage build
+    # breaks (e.g. pyproject/uv.lock drift, new runtime file missing
+    # COPY, wrong base image tag, etc.) — the exact failure mode we hit
+    # during the initial multi-source merge.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build fetcher image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: false
+          tags: health-grafana-ci-smoke:latest
+          # Cache build layers across runs to keep the step under 2 min.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
