@@ -189,13 +189,19 @@ def unified_activity_point(
     distance_m: float | None = None,
     active_minutes: float | None = None,
 ) -> dict[str, Any] | None:
+    # Coerce to int so the InfluxDB field type is stable across sources.
+    # Garmin returns ints, Oura returns floats; once a field is written as one
+    # type, later writes of the other type get silently dropped.
+    def _as_int(v):
+        return None if v is None else int(round(float(v)))
+
     fields = _drop_nones(
         {
-            "steps": steps,
-            "calories_active": calories_active,
-            "calories_total": calories_total,
-            "distance_m": distance_m,
-            "active_minutes": active_minutes,
+            "steps": _as_int(steps),
+            "calories_active": _as_int(calories_active),
+            "calories_total": _as_int(calories_total),
+            "distance_m": _as_int(distance_m),
+            "active_minutes": _as_int(active_minutes),
         }
     )
     if not fields:
