@@ -145,6 +145,30 @@ _STEPS_BRACKETS: list[tuple[int, int, dict[str, int | None]]] = [
     (65, 120, {"normal_min": 6000, "normal_max": None, "borderline_min": 4000, "borderline_max": None}),
 ]
 
+# VO2 max (ml/kg/min) by age x sex.
+# Source: Cooper Institute aerobic fitness norms. The `normal` band covers
+# "Good" through "Superior"; `borderline` extends down through "Average";
+# below `borderline_min` is "Below Average / Poor" (red). Cooper thresholds
+# drop gradually with age as peak VO2 declines ~10% per decade after 25.
+#   Men 20-29: Superior >=58, Excellent 52-57, Good 47-51, Above Avg 42-46, Avg 37-41, Below 33-36, Poor <33
+#   Men 30-39: Superior >=54, Excellent 48-53, Good 44-47, Above Avg 40-43, Avg 36-39, Below 32-35, Poor <32
+#   Men 40-49: Superior >=50, Excellent 45-49, Good 41-44, Above Avg 37-40, Avg 33-36, Below 29-32, Poor <29
+#   Men 50-59: Superior >=46, Excellent 42-45, Good 38-41, Above Avg 34-37, Avg 30-33, Below 26-29, Poor <26
+#   Men 60+:   Superior >=43, Excellent 39-42, Good 35-38, Above Avg 31-34, Avg 26-30, Below 22-25, Poor <22
+# Female norms run ~6-8 ml/kg/min lower across the same brackets.
+_VO2_MAX_BRACKETS: list[tuple[str, int, int, dict[str, float | None]]] = [
+    ("male",   18, 29, {"normal_min": 47, "normal_max": None, "borderline_min": 37, "borderline_max": None}),
+    ("male",   30, 39, {"normal_min": 44, "normal_max": None, "borderline_min": 36, "borderline_max": None}),
+    ("male",   40, 49, {"normal_min": 41, "normal_max": None, "borderline_min": 33, "borderline_max": None}),
+    ("male",   50, 59, {"normal_min": 38, "normal_max": None, "borderline_min": 30, "borderline_max": None}),
+    ("male",   60, 120, {"normal_min": 35, "normal_max": None, "borderline_min": 26, "borderline_max": None}),
+    ("female", 18, 29, {"normal_min": 41, "normal_max": None, "borderline_min": 32, "borderline_max": None}),
+    ("female", 30, 39, {"normal_min": 38, "normal_max": None, "borderline_min": 30, "borderline_max": None}),
+    ("female", 40, 49, {"normal_min": 35, "normal_max": None, "borderline_min": 27, "borderline_max": None}),
+    ("female", 50, 59, {"normal_min": 32, "normal_max": None, "borderline_min": 25, "borderline_max": None}),
+    ("female", 60, 120, {"normal_min": 29, "normal_max": None, "borderline_min": 22, "borderline_max": None}),
+]
+
 
 def _lookup_age_sex(profile: Profile, table: list) -> dict | None:
     for sex, lo, hi, ranges in table:
@@ -183,6 +207,10 @@ def resolve(profile: Profile) -> dict[str, dict]:
     steps = _lookup_age(profile, _STEPS_BRACKETS)
     if steps is not None:
         out["daily_steps"] = steps
+
+    vo2 = _lookup_age_sex(profile, _VO2_MAX_BRACKETS)
+    if vo2 is not None:
+        out["vo2_max"] = vo2
 
     return out
 
