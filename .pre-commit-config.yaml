@@ -1,0 +1,28 @@
+# Pre-commit hooks for health-grafana.
+#
+# One-time setup on a fresh clone:
+#
+#     uv tool install pre-commit
+#     pre-commit install
+#
+# After that, every `git commit` runs these hooks against the staged files.
+# The same checks run in CI (.github/workflows/ci.yml) so contributors who
+# don't install pre-commit locally still get protected at PR time.
+#
+# To run manually against all tracked files:
+#     pre-commit run --all-files
+
+repos:
+  - repo: local
+    hooks:
+      - id: check-secrets
+        name: "Block live credentials from being committed"
+        entry: python scripts/check_secrets.py
+        language: system
+        # Pass each staged file as an argument. Pre-commit filters the list
+        # to what's staged, so the scanner only inspects changed files.
+        pass_filenames: true
+        # Only look at text-ish files; skip binary blobs and images.
+        types_or: [python, yaml, json, toml, text, markdown, shell]
+        # Always run even on the final commit of a rebase, amend, etc.
+        stages: [pre-commit, pre-push, manual]
