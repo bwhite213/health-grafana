@@ -12,6 +12,7 @@ services:
       - influxdb
     volumes:
       - ./garminconnect-tokens:/home/appuser/.garminconnect # (persistent tokens storage - garminconnect-tokens folder must be owned by 1000:1000) - should be './garminconnect-tokens:/root/.garminconnect' instead if you are using user: root
+      - ./Grafana_Dashboard:/app/Grafana_Dashboard # fetcher rewrites normal-range threshold bands in these JSON files on startup based on USER_AGE / USER_SEX env vars. Must match the path mounted into the grafana service below so both containers see the same files.
 
     # Secrets (Garmin credentials, Oura PAT, timezone, etc.) are loaded from
     # override-default-vars.env in the repo root. Copy the template from
@@ -31,10 +32,18 @@ services:
       - GARMINCONNECT_IS_CN=False # Set this to True if you are in mainland China or use Garmin-cn (Default False)
       #####################################################################################
       # GARMINCONNECT_EMAIL, GARMINCONNECT_BASE64_PASSWORD, OURA_PERSONAL_ACCESS_TOKEN,
-      # OURA_ENABLED, ENABLE_UNIFIED_MEASUREMENTS, DISCREPANCY_LOOKBACK_DAYS, and
-      # USER_TIMEZONE are all loaded via env_file above (override-default-vars.env).
-      # Do NOT duplicate them here — values set in this block take precedence over
-      # env_file and will silently blank out your secrets.
+      # OURA_ENABLED, ENABLE_UNIFIED_MEASUREMENTS, DISCREPANCY_LOOKBACK_DAYS,
+      # USER_TIMEZONE, and the profile vars below are all loaded via env_file above
+      # (override-default-vars.env). Do NOT duplicate them here — values set in this
+      # block take precedence over env_file and will silently blank out your secrets.
+      #
+      # Profile vars used to stamp age/sex-specific normal-range bands into the
+      # Grafana dashboards at fetcher startup (all optional — stamping is skipped
+      # if USER_AGE or USER_SEX is missing):
+      #   USER_AGE         integer years, e.g. 35
+      #   USER_SEX         male | female
+      #   USER_HEIGHT_CM   integer cm (reserved; currently unused)
+      #   USER_WEIGHT_KG   integer kg (reserved; currently unused)
       #####################################################################################
       # The following ENV variables are required only if you are using influxdb V3 (You won't have to set the above )
       #####################################################################################

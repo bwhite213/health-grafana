@@ -27,7 +27,7 @@ import pytz
 # Importing garmin_fetch is what actually connects to InfluxDB, logs in to
 # Garmin, and defines the per-day fetch functions. We intentionally reuse
 # its module-level state rather than duplicating it.
-from . import discrepancy, garmin_fetch
+from . import discrepancy, garmin_fetch, normal_ranges
 from .sources import oura_fetch
 
 _log = logging.getLogger(__name__)
@@ -99,7 +99,12 @@ def _run_discrepancy_pass() -> None:
         _log.warning("Discrepancy pass failed: %s", err)
 
 
+DASHBOARD_DIR = os.getenv("DASHBOARD_DIR", "/app/Grafana_Dashboard")
+
+
 def main() -> None:
+    normal_ranges.stamp_dashboards_from_env(DASHBOARD_DIR)
+
     oura_client = _build_oura_client()
 
     # --- Login to Garmin (reuses the existing flow) ---
