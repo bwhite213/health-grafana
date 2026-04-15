@@ -1,0 +1,831 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {"type": "grafana", "uid": "-- Grafana --"},
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Oura Ring native metrics dashboard. Queries the raw Oura* measurements. Every timeseries panel includes a 14-day personal rolling baseline ('Your typical'). Metrics with clinical norms (steps, sleep duration, sleep efficiency, RHR) also get a green/yellow/red population band tuned for a 35M (see config/normal_ranges.yaml).",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 100,
+      "panels": [],
+      "title": "Overview (latest day)",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Latest Oura Sleep Score (0-100).",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "orange", "value": 60},
+            {"color": "yellow", "value": 75},
+            {"color": "green", "value": 85}
+          ]},
+          "unit": "none",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1},
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT last(\"sleep_score\") FROM \"OuraSleep\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Sleep Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Latest Oura Readiness Score (0-100).",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "orange", "value": 60},
+            {"color": "yellow", "value": 75},
+            {"color": "green", "value": 85}
+          ]},
+          "unit": "none",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1},
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT last(\"score\") FROM \"OuraReadiness\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Readiness Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Latest Oura Activity Score (0-100).",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "orange", "value": 60},
+            {"color": "yellow", "value": 75},
+            {"color": "green", "value": 85}
+          ]},
+          "unit": "none",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1},
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT last(\"score\") FROM \"OuraDailyActivity\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Activity Score",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Average HRV during sleep over the selected window.",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "orange", "value": 30},
+            {"color": "yellow", "value": 45},
+            {"color": "green", "value": 60}
+          ]},
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["mean"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"average_hrv\") FROM \"OuraSleep\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Avg HRV (window)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5},
+      "id": 101,
+      "panels": [],
+      "title": "Sleep",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Nightly sleep composition: deep / light / REM / awake, stacked to total time in bed.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "hours",
+            "axisPlacement": "auto",
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {"type": "linear"},
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {"group": "A", "mode": "normal"},
+            "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "h"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 6},
+      "id": 5,
+      "options": {
+        "legend": {"calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "Deep",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"deep_sleep_duration\") / 3600 FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Light",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"light_sleep_duration\") / 3600 FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "REM",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"rem_sleep_duration\") / 3600 FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Awake",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"awake_time\") / 3600 FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Sleep stages (stacked)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Oura Sleep Score and measured efficiency (both 0-100). Green band = good sleep efficiency (>=85%). Dashed line = your 14-day rolling typical.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {"group": "A", "mode": "none"},
+            "thresholdsStyle": {"mode": "area"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "yellow", "value": 75},
+            {"color": "green", "value": 85}
+          ]},
+          "unit": "none",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.8)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 6},
+      "id": 6,
+      "options": {
+        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "Sleep Score",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"sleep_score\") FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Efficiency",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"efficiency\") FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical sleep score (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"sleep_score\"), 14) FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical efficiency (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"efficiency\"), 14) FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Sleep score & efficiency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Overnight HRV average and lowest heart rate — Oura's best recovery indicators. Dashed lines = your 14-day rolling typical for each.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {"group": "A", "mode": "none"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "none"
+        },
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "HRV (ms)"}, "properties": [{"id": "unit", "value": "ms"}]},
+          {"matcher": {"id": "byName", "options": "Lowest HR (bpm)"}, "properties": [{"id": "unit", "value": "bpm"}]},
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.8)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 15},
+      "id": 7,
+      "options": {
+        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "HRV (ms)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"average_hrv\") FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Lowest HR (bpm)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"lowest_heart_rate\") FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical HRV (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"average_hrv\"), 14) FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical lowest HR (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"lowest_heart_rate\"), 14) FROM \"OuraSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "HRV & lowest sleeping HR",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 24},
+      "id": 102,
+      "panels": [],
+      "title": "Readiness",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Daily Oura Readiness Score. Dashed line = your 14-day rolling typical.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "auto",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "none",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.8)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 25},
+      "id": 8,
+      "options": {
+        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single"}
+      },
+      "targets": [
+        {
+          "alias": "Readiness",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"score\") FROM \"OuraReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical readiness (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"score\"), 14) FROM \"OuraReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Readiness score",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Body temperature deviation from your personal baseline (°C). Sustained rises often precede illness or overtraining. Dashed line = your 14-day rolling typical.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "auto",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.8)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 25},
+      "id": 9,
+      "options": {
+        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "Deviation",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"temperature_deviation\") FROM \"OuraReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Trend deviation",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"temperature_trend_deviation\") FROM \"OuraReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical deviation (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"temperature_deviation\"), 14) FROM \"OuraReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Body temperature deviation",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 34},
+      "id": 103,
+      "panels": [],
+      "title": "Activity",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Daily step count. Green band = 7500+ (Tudor-Locke 'somewhat active' or better). Dashed line = your 14-day rolling typical.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 70,
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "never",
+            "spanNulls": true,
+            "thresholdsStyle": {"mode": "area"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "yellow", "value": 5000},
+            {"color": "green", "value": 7500}
+          ]},
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.drawStyle", "value": "line"},
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 2},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 35},
+      "id": 10,
+      "options": {
+        "legend": {"calcs": ["mean", "sum"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single"}
+      },
+      "targets": [
+        {
+          "alias": "Steps",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"steps\") FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical steps (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"steps\"), 14) FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Steps",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Total vs. active calories burned. Dashed lines = your 14-day rolling typical.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "auto",
+            "spanNulls": true
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "kcal"
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.8)"}}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 35},
+      "id": 11,
+      "options": {
+        "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "Total",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"total_calories\") FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Active",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"active_calories\") FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical total (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"total_calories\"), 14) FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical active (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"active_calories\"), 14) FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Calories (total & active)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "How your day was distributed across intensity levels. Stacked hours per day.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "hours",
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {"group": "A", "mode": "normal"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "h"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 44},
+      "id": 12,
+      "options": {
+        "legend": {"calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {
+          "alias": "High",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"high_activity_time\") / 3600 FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Medium",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"medium_activity_time\") / 3600 FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Low",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"low_activity_time\") / 3600 FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Sedentary",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"sedentary_time\") / 3600 FROM \"OuraDailyActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "D",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Activity intensity breakdown (stacked)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 53},
+      "id": 104,
+      "panels": [],
+      "title": "Heart Rate",
+      "type": "row"
+    },
+    {
+      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "description": "Intraday heart rate samples from Oura (captured during rest/sleep windows).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 3,
+            "showPoints": "never",
+            "spanNulls": false
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "bpm"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 54},
+      "id": 13,
+      "options": {
+        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single"}
+      },
+      "targets": [
+        {
+          "alias": "HR",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT mean(\"heartRate\") FROM \"OuraHRIntraday\" WHERE $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Heart rate (intraday)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["health", "oura"],
+  "templating": {"list": []},
+  "time": {"from": "now-30d", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Oura Ring Health",
+  "uid": "oura-ring-health",
+  "version": 2,
+  "weekStart": ""
+}

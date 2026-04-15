@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Cross-source view of health data from Garmin, Oura (and future Apple Watch). Shows per-source lines, a cross-source average, and a discrepancy panel highlighting where sources disagree.",
+  "description": "Cross-source view of health data from Garmin, Oura (and future Apple Watch). Shows per-source lines, a cross-source average, and a discrepancy panel highlighting where sources disagree. Every timeseries panel also shows your 14-day rolling personal baseline ('Your typical') as a dashed gray line; metrics with clinical norms (sleep duration, RHR, steps) get a green/yellow/red population band tuned for a 35M (see config/normal_ranges.yaml).",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -32,7 +32,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Nightly sleep duration by source. Toggle $source to filter. The dashed line (when shown) is the cross-source mean — your best estimate for nights where you wore multiple devices.",
+      "description": "Nightly sleep duration by source. Toggle $source to filter. Green band = CDC/NSF adult recommendation (7-9h). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -53,13 +53,29 @@
             "showPoints": "auto",
             "spanNulls": true,
             "stacking": {"group": "A", "mode": "none"},
-            "thresholdsStyle": {"mode": "off"}
+            "thresholdsStyle": {"mode": "area"}
           },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "yellow", "value": 6},
+            {"color": "green", "value": 7},
+            {"color": "yellow", "value": 9},
+            {"color": "red", "value": 10}
+          ]},
           "unit": "h"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 12, "x": 0, "y": 1},
       "id": 1,
@@ -94,6 +110,14 @@
           "rawQuery": true,
           "refId": "B",
           "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"duration_s\"), 14) / 3600 FROM \"UnifiedSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
         }
       ],
       "title": "Sleep duration by source",
@@ -101,7 +125,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "HRV averaged over each night's sleep, per source.",
+      "description": "HRV averaged over each night's sleep, per source. Dashed gray line = your 14-day rolling typical. No population band — HRV is too individual for one to be meaningful.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -117,7 +141,17 @@
           },
           "unit": "ms"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 12, "x": 12, "y": 1},
       "id": 2,
@@ -132,6 +166,14 @@
           "query": "SELECT mean(\"hrv_avg\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"hrv_avg\"), 14) FROM \"UnifiedSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
           "resultFormat": "time_series"
         }
       ],
@@ -208,7 +250,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Resting heart rate reported by each source.",
+      "description": "Resting heart rate reported by each source. Green band = 50-70 bpm (fit-to-normal range for 35M). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -220,11 +262,30 @@
             "lineWidth": 2,
             "pointSize": 6,
             "showPoints": "auto",
-            "spanNulls": true
+            "spanNulls": true,
+            "thresholdsStyle": {"mode": "area"}
           },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "yellow", "value": 40},
+            {"color": "green", "value": 50},
+            {"color": "yellow", "value": 70},
+            {"color": "red", "value": 85}
+          ]},
           "unit": "bpm"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 12, "x": 0, "y": 20},
       "id": 4,
@@ -247,6 +308,14 @@
           "query": "SELECT mean(\"rhr\") FROM \"UnifiedHeartRate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"rhr\"), 14) FROM \"UnifiedHeartRate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
           "resultFormat": "time_series"
         }
       ],
@@ -301,7 +370,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Daily step counts. Bars grouped by source so you can directly compare side-by-side on days you wore multiple devices.",
+      "description": "Daily step counts. Bars grouped by source so you can directly compare side-by-side on days you wore multiple devices. Green band = 7500+ (Tudor-Locke 'somewhat active'). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -309,11 +378,29 @@
             "axisLabel": "steps",
             "drawStyle": "bars",
             "fillOpacity": 80,
-            "lineWidth": 1
+            "lineWidth": 1,
+            "thresholdsStyle": {"mode": "area"}
           },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "red", "value": null},
+            {"color": "yellow", "value": 5000},
+            {"color": "green", "value": 7500}
+          ]},
           "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.drawStyle", "value": "line"},
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 2},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 12, "x": 0, "y": 30},
       "id": 6,
@@ -329,6 +416,14 @@
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"steps\"), 14) FROM \"UnifiedActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
         }
       ],
       "title": "Daily steps by source",
@@ -336,7 +431,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Active calories burned per day by source.",
+      "description": "Active calories burned per day by source. Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -352,7 +447,17 @@
           },
           "unit": "kcal"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 12, "x": 12, "y": 30},
       "id": 7,
@@ -367,6 +472,14 @@
           "query": "SELECT mean(\"calories_active\") FROM \"UnifiedActivity\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"calories_active\"), 14) FROM \"UnifiedActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
           "resultFormat": "time_series"
         }
       ],
@@ -383,7 +496,7 @@
     },
     {
       "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Normalized 0-100 readiness score. Garmin Body Battery and Oura Readiness are plotted on the same axis — they are NOT identical metrics but both indicate recovery state.",
+      "description": "Normalized 0-100 readiness score. Garmin Body Battery and Oura Readiness are plotted on the same axis — they are NOT identical metrics but both indicate recovery state. Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -401,7 +514,17 @@
           "min": 0,
           "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "properties": [
+              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
+              {"id": "custom.lineWidth", "value": 1},
+              {"id": "custom.fillOpacity", "value": 0},
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+            ]
+          }
+        ]
       },
       "gridPos": {"h": 9, "w": 24, "x": 0, "y": 40},
       "id": 8,
@@ -416,6 +539,14 @@
           "query": "SELECT mean(\"score\") FROM \"UnifiedReadiness\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "query": "SELECT moving_average(mean(\"score\"), 14) FROM \"UnifiedReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
+          "rawQuery": true,
+          "refId": "B",
           "resultFormat": "time_series"
         }
       ],
@@ -540,6 +671,6 @@
   "timezone": "",
   "title": "Multi-Source Health",
   "uid": "multi-source-health",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
