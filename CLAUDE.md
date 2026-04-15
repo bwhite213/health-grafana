@@ -148,9 +148,23 @@ Follow the Oura pattern:
 4. Register the fetcher in `orchestrator.py` so it runs each cycle.
 5. Add the new `Source` value to the dashboard `source` variable's options
    in `Multi-Source-Health-Dashboard.json`.
-6. Update `discrepancy.py`'s source list if you want pairwise diffs against
+6. Add a **per-source dashboard** at `Grafana_Dashboard/<NewSource>-Dashboard.json`
+   that queries the raw `<NewSource>*` measurements directly (no `Source` tag
+   filtering needed since each dashboard is single-source). Mirror the section
+   layout used by `Oura-Dashboard.json`: Overview (stat panels) → Sleep →
+   Readiness/Recovery → Activity → Heart Rate. Every timeseries panel (except
+   stacked breakdowns and intraday streams) must include a "Your typical (14d)"
+   target built with `moving_average(mean("field"), 14)` and a field override
+   matching alias `/Your typical.*/` that renders it as a dashed gray line.
+   For metrics with clinical norms listed in `config/normal_ranges.yaml`
+   (RHR, sleep duration, sleep efficiency, daily steps), also set
+   `custom.thresholdsStyle.mode: "area"` and populate `thresholds.steps`
+   with the red/yellow/green zones from that config. The existing
+   `Garmin-Grafana-Dashboard.yaml` provider already auto-provisions every
+   `.json` file in this directory — no yaml changes needed.
+7. Update `discrepancy.py`'s source list if you want pairwise diffs against
    the new source.
-7. Update this file and `README.md` with the new source.
+8. Update this file and `README.md` with the new source.
 
 ## Things to preserve
 
