@@ -1044,6 +1044,259 @@
         "x": 0,
         "y": 49
       },
+      "id": 105,
+      "panels": [],
+      "title": "VO2 Max & Fitness",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "VO2 max (ml/kg/min) reported by each source. Garmin derives this from running-HR data; Oura estimates it from HR patterns during activity. Green band = Cooper Institute 'Good and above' for your age/sex (stamped from USER_AGE / USER_SEX at fetcher startup). Dashed gray line = your 14-day rolling typical across all sources.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "ml/kg/min",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 36
+              },
+              {
+                "color": "green",
+                "value": 44
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 16,
+        "x": 0,
+        "y": 50
+      },
+      "id": 11,
+      "_normalRangeMetric": "vo2_max",
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "alias": "$tag_Source",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT mean(\"vo2_max\") FROM \"UnifiedVO2Max\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(previous)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Mean (all sources)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT mean(\"vo2_max\") FROM \"UnifiedVO2Max\" WHERE $timeFilter GROUP BY time(1d) fill(previous)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Your typical (14d)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT moving_average(mean(\"vo2_max\"), 14) FROM \"UnifiedVO2Max\" WHERE $timeFilter GROUP BY time(1d) fill(previous)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "VO2 max trend by source",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Most recent VO2 max reading per source (last 30 days). Color tiers use Cooper Institute norms for 30-39 male as a reasonable default (red Poor <32, orange Below Average 32-35, yellow Average 36-43, green Good/Excellent 44-53, super-light-green Superior >=54). Stat panels don't get stamper-driven bands, so if your profile differs from 30-39 male, treat these as a rough guide and rely on the trend panel's profile-stamped band for the accurate reference.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 32
+              },
+              {
+                "color": "yellow",
+                "value": 36
+              },
+              {
+                "color": "green",
+                "value": 44
+              },
+              {
+                "color": "super-light-green",
+                "value": 54
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 50
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "alias": "$tag_Source",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT last(\"vo2_max\") FROM \"UnifiedVO2Max\" WHERE (\"Source\" =~ /^$source$/) AND time > now() - 30d GROUP BY \"Source\"",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Current VO2 max",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 59
+      },
       "id": 104,
       "panels": [],
       "title": "Source Discrepancies",
@@ -1106,7 +1359,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 50
+        "y": 60
       },
       "id": 9,
       "options": {
@@ -1161,7 +1414,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 72
       },
       "id": 10,
       "options": {
