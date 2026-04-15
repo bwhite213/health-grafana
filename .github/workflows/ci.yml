@@ -4,7 +4,16 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches:
+      - main
+      # Also run on feature branches so contributors see CI results before
+      # opening a PR, and so the first-time-added workflow file still fires
+      # on its own introductory commit (GitHub's pull_request event has a
+      # quirk where new workflows added in a PR update don't always run on
+      # that same commit — push triggers do not have this limitation).
+      - 'claude/**'
+      - 'feature/**'
+  workflow_dispatch:
 
 jobs:
   validate:
