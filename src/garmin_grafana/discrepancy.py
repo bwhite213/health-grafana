@@ -14,9 +14,10 @@ importing either client here.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from itertools import combinations
-from typing import Any, Callable
+from typing import Any
 
 import pytz
 
@@ -29,11 +30,13 @@ COMPARED_METRICS: list[tuple[str, str, str]] = [
     ("UnifiedSleep", "duration_s", "sleep_duration_s"),
     ("UnifiedSleep", "hrv_avg", "sleep_hrv_avg"),
     ("UnifiedSleep", "rhr", "sleep_rhr"),
+    ("UnifiedSleep", "spo2_avg", "sleep_spo2_avg"),
     ("UnifiedHeartRate", "rhr", "daily_rhr"),
     ("UnifiedActivity", "steps", "steps"),
     ("UnifiedActivity", "calories_active", "active_calories"),
     ("UnifiedReadiness", "score", "readiness_score"),
     ("UnifiedVO2Max", "vo2_max", "vo2_max"),
+    ("UnifiedStress", "stress_high_s", "stress_high_s"),
 ]
 
 
@@ -141,7 +144,7 @@ def make_influxdb_v1_query_fn(influxdb_client) -> QueryFn:
         result = influxdb_client.query(q)
         out: dict[str, float] = {}
         # result.items() yields ((measurement, tags), generator_of_rows)
-        for (meas, tags), rows in result.items():
+        for (_meas, tags), rows in result.items():
             source = (tags or {}).get("Source")
             if not source:
                 continue

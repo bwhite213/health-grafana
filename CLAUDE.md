@@ -80,14 +80,21 @@ Every source also writes to a normalized set of measurements tagged by
 
 | Measurement           | Tags                          | Key fields                                                                     |
 | --------------------- | ----------------------------- | ------------------------------------------------------------------------------ |
-| `UnifiedSleep`        | `Source`, `Device`, `User_ID` | `duration_s`, `deep_s`, `light_s`, `rem_s`, `awake_s`, `hrv_avg`, `rhr`, `efficiency`, `score` |
+| `UnifiedSleep`        | `Source`, `Device`, `User_ID` | `duration_s`, `deep_s`, `light_s`, `rem_s`, `awake_s`, `hrv_avg`, `rhr`, `efficiency`, `score`, `spo2_avg` |
 | `UnifiedHeartRate`    | `Source`, `Device`, `User_ID` | `rhr`, `hr_avg`, `hr_max`, `hr_min`                                            |
 | `UnifiedHRIntraday`   | `Source`, `Device`, `User_ID` | `hr`                                                                           |
 | `UnifiedActivity`     | `Source`, `Device`, `User_ID` | `steps`, `calories_active`, `calories_total`, `distance_m`, `active_minutes`   |
 | `UnifiedReadiness`    | `Source`, `Device`, `User_ID` | `score` (0–100: prefers Garmin Training Readiness, falls back to Body Battery; Oura Readiness) |
 | `UnifiedVO2Max`       | `Source`, `Device`, `User_ID` | `vo2_max`                                                                      |
 | `UnifiedWorkout`      | `Source`, `Device`, `User_ID`, `Activity` | `duration_s`, `calories`, `distance_m`, `hr_avg`, `hr_max`, `intensity` |
+| `UnifiedStress`       | `Source`, `Device`, `User_ID` | `stress_high_s`, `stress_avg`, `recovery_high_s`                               |
 | `SourceDiscrepancy`   | `Metric`, `Source_A`, `Source_B` | `value_a`, `value_b`, `abs_diff`, `pct_diff`                                |
+
+Raw per-source measurements also include `OuraSpO2`, `OuraStress`, and
+`OuraTags`. `OuraTags` drives Grafana annotations (vertical lines on every
+timeseries panel) via the annotation query defined in the dashboard JSON —
+log a tag like "sick" or "travel" in the Oura app and it shows up on the
+charts the moment the fetcher syncs.
 
 `Source` values currently used: `Garmin`, `Oura`. Future: `Apple`.
 
@@ -120,6 +127,13 @@ are reused unchanged.
 # One-time setup
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync --locked
+cp override-default-vars.env.example override-default-vars.env
+nano override-default-vars.env   # fill in Garmin/Oura credentials
+
+# Optional but strongly recommended — installs a pre-commit hook that
+# blocks accidental commits of live credentials:
+uv tool install pre-commit
+pre-commit install
 
 # Run the orchestrator
 uv run python -m garmin_grafana.orchestrator
@@ -129,6 +143,21 @@ The orchestrator expects InfluxDB reachable at `$INFLUXDB_HOST:$INFLUXDB_PORT`.
 For dev it's easiest to start just the InfluxDB + Grafana containers via
 `docker compose up influxdb grafana` and point the local Python process at
 `localhost`.
+
+### CI checks (run locally before pushing)
+
+The same checks CI runs can all be invoked locally:
+
+```bash
+uv sync --locked                               # lockfile drift
+uv run python -m compileall -q src/garmin_grafana   # syntax
+uvx --from 'ruff==0.6.9' ruff check .          # lint (config in pyproject.toml)
+uv run python scripts/check_secrets.py         # credential scan
+```
+
+`scripts/check_secrets.py` is the same script that runs in pre-commit and
+CI. New files with placeholder-shaped credentials should be added to its
+`ALLOWLIST` rather than weakening the regex.
 
 ## Running in production (user's Ubuntu server)
 

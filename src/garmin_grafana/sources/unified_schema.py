@@ -23,8 +23,9 @@ existing ``write_points_to_influxdb`` helper can persist them.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Iterable
+from typing import Any
 
 import pytz
 
@@ -36,6 +37,7 @@ M_ACTIVITY = "UnifiedActivity"
 M_READINESS = "UnifiedReadiness"
 M_VO2_MAX = "UnifiedVO2Max"
 M_WORKOUT = "UnifiedWorkout"
+M_STRESS = "UnifiedStress"
 
 SOURCE_GARMIN = "Garmin"
 SOURCE_OURA = "Oura"
@@ -97,6 +99,7 @@ def unified_sleep_point(
     rhr: float | None = None,
     efficiency: float | None = None,
     score: float | None = None,
+    spo2_avg: float | None = None,
 ) -> dict[str, Any] | None:
     fields = _drop_nones(
         {
@@ -109,6 +112,7 @@ def unified_sleep_point(
             "rhr": rhr,
             "efficiency": efficiency,
             "score": score,
+            "spo2_avg": spo2_avg,
         }
     )
     if not fields:
@@ -282,6 +286,44 @@ def unified_workout_point(
     }
 
 
+def unified_stress_point(
+    *,
+    source: str,
+    device: str,
+    database_name: str,
+    time: datetime | str,
+    stress_high_s: int | None = None,
+    stress_avg: float | None = None,
+    recovery_high_s: int | None = None,
+) -> dict[str, Any] | None:
+    """Daily stress summary, normalized across sources.
+
+    - ``stress_high_s``: seconds spent in "high" stress state during the day.
+      Garmin reports this directly as ``highStressDuration``. Oura exposes a
+      similar integer on ``/daily_stress.stress_high`` (seconds).
+    - ``stress_avg``: 0-100 average stress score when the source provides one
+      (Garmin ``stressPercentage``). Oura doesn't expose a single average, so
+      this stays None for Oura points.
+    - ``recovery_high_s``: seconds in "recovery" state. Oura-only field;
+      Garmin has no direct equivalent.
+    """
+    fields = _drop_nones(
+        {
+            "stress_high_s": stress_high_s,
+            "stress_avg": stress_avg,
+            "recovery_high_s": recovery_high_s,
+        }
+    )
+    if not fields:
+        return None
+    return {
+        "measurement": M_STRESS,
+        "time": _iso(time),
+        "tags": _base_tags(source, device, database_name),
+        "fields": fields,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Normalizers: native source dict -> list of unified points
 # ---------------------------------------------------------------------------
@@ -353,6 +395,7 @@ def garmin_to_unified(
                     rhr=sleep_data.get("restingHeartRate"),
                     efficiency=efficiency,
                     score=score,
+                    spo2_avg=sleep_dto.get("averageSpO2Value"),
                 )
             )
 
@@ -433,6 +476,22 @@ def garmin_to_unified(
                 ),
             )
 
+        # Stress: Garmin already aggregates high/low/medium stress durations
+        # in seconds on DailyStats. We only mirror "high" into unified stress
+        # since it's the one directly comparable across sources.
+        high_stress_seconds = daily_stats.get("highStressDuration")
+        stress_pct = daily_stats.get("stressPercentage")
+        if high_stress_seconds is not None or stress_pct is not None:
+            _append_if_present(
+                points,
+                unified_stress_point(
+                    **tag_base,
+                    time=start,
+                    stress_high_s=int(high_stress_seconds) if high_stress_seconds is not None else None,
+                    stress_avg=float(stress_pct) if stress_pct is not None else None,
+                ),
+            )
+
     # --- VO2 max ---
     if max_metrics:
         try:
@@ -501,6 +560,8 @@ def oura_to_unified(
     daily_readiness: dict | None = None,
     vo2_max: dict | None = None,
     workouts: list | None = None,
+    daily_spo2: dict | None = None,
+    daily_stress: dict | None = None,
 ) -> list[dict[str, Any]]:
     """
     Build Unified* points from Oura Cloud API v2 response dicts.
@@ -512,6 +573,8 @@ def oura_to_unified(
       - /daily_readiness   -> ``daily_readiness`` (readiness score 0-100)
       - /vO2_max           -> ``vo2_max``         (single daily VO2 max value)
       - /workout           -> ``workouts``        (list of workout sessions)
+      - /daily_spo2        -> ``daily_spo2``      (nightly average SpO2 %)
+      - /daily_stress      -> ``daily_stress``    (seconds in high stress)
     """
     points: list[dict[str, Any]] = []
     tag_base = {"source": SOURCE_OURA, "device": device_name, "database_name": database_name}
@@ -530,6 +593,18 @@ def oura_to_unified(
         score = None
         if daily_sleep:
             score = daily_sleep.get("score")
+        # Oura exposes the nightly SpO2 on a separate endpoint (/daily_spo2).
+        # Fold it into the UnifiedSleep point so a single query can compare
+        # sleep SpO2 across sources. Oura returns it under `spo2_percentage`
+        # as a dict {average, ...} depending on API version; accept either a
+        # flat float or the nested form.
+        spo2_avg = None
+        if daily_spo2:
+            raw = daily_spo2.get("spo2_percentage")
+            if isinstance(raw, dict):
+                spo2_avg = raw.get("average")
+            elif isinstance(raw, int | float):
+                spo2_avg = float(raw)
         _append_if_present(
             points,
             unified_sleep_point(
@@ -544,6 +619,7 @@ def oura_to_unified(
                 rhr=rhr,
                 efficiency=efficiency,
                 score=score,
+                spo2_avg=spo2_avg,
             ),
         )
 
@@ -638,5 +714,19 @@ def oura_to_unified(
                     intensity=w.get("intensity"),
                 ),
             )
+
+    # --- Stress ---
+    if daily_stress:
+        day = daily_stress.get("day") or date_str
+        day_ts = f"{day}T12:00:00+00:00"
+        _append_if_present(
+            points,
+            unified_stress_point(
+                **tag_base,
+                time=day_ts,
+                stress_high_s=daily_stress.get("stress_high"),
+                recovery_high_s=daily_stress.get("recovery_high"),
+            ),
+        )
 
     return points
