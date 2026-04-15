@@ -1,0 +1,243 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate, type-check, smoke-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          # Pinned to the version used in the Dockerfile so local and CI
+          # behaviour match exactly.
+          version: "0.6.17"
+          python-version: "3.13"
+
+      # ---------------------------------------------------------------------
+      # 1. Lockfile drift guard
+      # ---------------------------------------------------------------------
+      # Catches the pyproject.toml / uv.lock drift bug that broke the Docker
+      # build on 2026-04-15 (rename from garmin-grafana -> health-grafana
+      # invalidated uv.lock without regenerating it).
+      - name: uv sync --locked
+        run: uv sync --locked
+
+      # ---------------------------------------------------------------------
+      # 2. Python syntax safety net
+      # ---------------------------------------------------------------------
+      - name: Python syntax check
+        run: uv run python -m compileall -q src/garmin_grafana
+
+      # ---------------------------------------------------------------------
+      # 3. Dashboard JSON validation
+      # ---------------------------------------------------------------------
+      # Grafana silently ignores dashboards with malformed JSON. We parse
+      # each file and also walk panels to make sure every gridPos has the
+      # required shape (the bug-class the rebase merges caused twice).
+      - name: Validate Grafana dashboard JSON
+        run: |
+          uv run python - <<'PY'
+          import json, pathlib, sys
+          errs = 0
+          for path in sorted(pathlib.Path("Grafana_Dashboard").glob("*.json")):
+              try:
+                  data = json.loads(path.read_text())
+              except json.JSONDecodeError as exc:
+                  print(f"FAIL  {path}: {exc}")
+                  errs += 1
+                  continue
+              panels = data.get("panels") or []
+              for panel in panels:
+                  pid = panel.get("id", "?")
+                  gp = panel.get("gridPos") or {}
+                  missing = [k for k in ("h", "w", "x", "y") if k not in gp]
+                  if missing:
+                      print(f"FAIL  {path} panel {pid}: gridPos missing {missing}")
+                      errs += 1
+              print(f"ok    {path} ({len(panels)} panels)")
+          sys.exit(errs)
+          PY
+
+      # ---------------------------------------------------------------------
+      # 4. YAML validation
+      # ---------------------------------------------------------------------
+      - name: Validate YAML (compose, workflows, config)
+        run: |
+          uv run --with pyyaml python - <<'PY'
+          import pathlib, sys
+          import yaml
+          targets = []
+          for pattern in ("compose-example.yml", ".github/workflows/*.yml",
+                          ".github/workflows/*.yaml", "config/*.yaml",
+                          "Grafana_Datasource/*.yaml", "Grafana_Dashboard/*.yaml"):
+              targets.extend(sorted(pathlib.Path(".").glob(pattern)))
+          errs = 0
+          for path in targets:
+              try:
+                  with open(path) as f:
+                      # Use safe_load_all so multi-doc files (like k8s) are fine.
+                      list(yaml.safe_load_all(f))
+                  print(f"ok    {path}")
+              except yaml.YAMLError as exc:
+                  print(f"FAIL  {path}: {exc}")
+                  errs += 1
+          sys.exit(errs)
+          PY
+
+      # ---------------------------------------------------------------------
+      # 5. normal_ranges stamper smoke test
+      # ---------------------------------------------------------------------
+      # Guards against catalog entries that fail to resolve and against
+      # profile brackets that produce empty threshold lists. Uses a synthetic
+      # 35M profile so the CI run is deterministic.
+      - name: Normal-range stamper smoke test
+        env:
+          USER_AGE: "35"
+          USER_SEX: "male"
+        run: |
+          uv run python - <<'PY'
+          import sys
+          sys.path.insert(0, "src")
+          from garmin_grafana import normal_ranges
+
+          profile = normal_ranges.load_profile_from_env()
+          assert profile is not None, "profile should load from env"
+          assert profile.age == 35 and profile.sex == "male"
+
+          resolved = normal_ranges.resolve(profile)
+          expected = {
+              "resting_heart_rate",
+              "sleep_duration_hours",
+              "sleep_efficiency_pct",
+              "daily_steps",
+              "vo2_max",
+          }
+          missing = expected - set(resolved)
+          assert not missing, f"resolve() missing keys: {missing}"
+
+          for key, ranges in resolved.items():
+              steps = normal_ranges.build_threshold_steps(ranges)
+              assert len(steps) >= 2, f"{key} produced only {len(steps)} steps"
+
+          # Idempotency: stamping a freshly-built dashboard should produce
+          # zero rewrites on the second pass. We copy dashboards to a temp
+          # dir so the working tree stays clean even if the first pass does
+          # write (which it shouldn't, since the committed files already
+          # match the 35M profile).
+          import pathlib, shutil, tempfile
+          with tempfile.TemporaryDirectory() as tmp:
+              for p in pathlib.Path("Grafana_Dashboard").glob("*.json"):
+                  shutil.copy(p, tmp)
+              first = normal_ranges.stamp_dashboards(tmp, profile)
+              second = normal_ranges.stamp_dashboards(tmp, profile)
+              assert second == 0, f"stamper not idempotent: {second} files on second pass"
+              print(f"stamper: first={first}, second={second}")
+          print("normal_ranges smoke test passed")
+          PY
+
+      # ---------------------------------------------------------------------
+      # 6. unified_schema normalizer smoke test
+      # ---------------------------------------------------------------------
+      # Exercises the Garmin -> Unified* path with a realistic input dict.
+      # Catches regressions in: field filtering, empty-field guard,
+      # TrainingReadiness > BodyBattery preference, discrepancy catalog
+      # coverage of UnifiedVO2Max, and Oura VO2/workout point builders.
+      - name: Unified schema smoke test
+        run: |
+          uv run python - <<'PY'
+          import sys
+          sys.path.insert(0, "src")
+          from garmin_grafana.sources import unified_schema as u
+          from garmin_grafana import discrepancy as d
+
+          # --- Garmin side with TrainingReadiness + VO2 + activity ---
+          pts = u.garmin_to_unified(
+              date_str="2026-04-14",
+              device_name="Quatix 7 Pro",
+              database_name="GarminStats",
+              daily_stats={
+                  "wellnessStartTimeGmt": "2026-04-14T04:00:00.0",
+                  "totalSteps": 12000,
+                  "restingHeartRate": 55,
+                  "maxHeartRate": 180,
+                  "minHeartRate": 42,
+                  "minAvgHeartRate": 60,
+                  "activeKilocalories": 500,
+                  "bmrKilocalories": 1500,
+                  "bodyBatteryAtWakeTime": 95,
+              },
+              max_metrics=[{"generic": {"vo2MaxPreciseValue": 52.3}}],
+              training_readiness=[{"score": 82, "timestamp": "2026-04-14T06:30:00.000"}],
+              activities=[{
+                  "startTimeGMT": "2026-04-14 10:00:00",
+                  "activityType": {"typeKey": "running"},
+                  "duration": 3600, "calories": 450, "distance": 5000,
+                  "averageHR": 155, "maxHR": 180,
+              }],
+          )
+          emitted = {p["measurement"] for p in pts}
+          required = {
+              "UnifiedActivity",
+              "UnifiedHeartRate",
+              "UnifiedReadiness",
+              "UnifiedVO2Max",
+              "UnifiedWorkout",
+          }
+          missing = required - emitted
+          assert not missing, f"garmin_to_unified missing: {missing}"
+
+          readiness = next(p for p in pts if p["measurement"] == "UnifiedReadiness")
+          assert readiness["fields"]["score"] == 82.0, (
+              f"TrainingReadiness should beat BodyBattery (95): {readiness}"
+          )
+
+          workout = next(p for p in pts if p["measurement"] == "UnifiedWorkout")
+          assert workout["tags"]["Activity"] == "running"
+          assert workout["fields"]["duration_s"] == 3600
+
+          # --- Oura side with VO2 + workouts ---
+          opts = u.oura_to_unified(
+              date_str="2026-04-14",
+              device_name="Oura Ring",
+              database_name="GarminStats",
+              vo2_max={"day": "2026-04-14", "vo2_max": 50.1},
+              workouts=[{
+                  "day": "2026-04-14",
+                  "start_datetime": "2026-04-14T10:00:00+00:00",
+                  "end_datetime": "2026-04-14T11:00:00+00:00",
+                  "activity": "running",
+                  "calories": 440, "distance": 4800,
+                  "average_heart_rate": 152, "max_heart_rate": 175,
+                  "intensity": "high",
+              }],
+          )
+          oura_emitted = {p["measurement"] for p in opts}
+          assert "UnifiedVO2Max" in oura_emitted
+          assert "UnifiedWorkout" in oura_emitted
+
+          # --- Empty-fields guard ---
+          assert u.unified_vo2_max_point(
+              source="Garmin", device="x", database_name="y",
+              time="2026-04-14", vo2_max=None,
+          ) is None
+          assert u.unified_heart_rate_point(
+              source="Garmin", device="x", database_name="y",
+              time="2026-04-14",
+              rhr=None, hr_avg=None, hr_max=None, hr_min=None,
+          ) is None
+
+          # --- Discrepancy catalog includes vo2_max ---
+          labels = [m[2] for m in d.COMPARED_METRICS]
+          assert "vo2_max" in labels
+
+          print("unified_schema smoke test passed")
+          PY
