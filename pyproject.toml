@@ -16,3 +16,41 @@ dependencies = [
 [project.scripts]
 garmin-fetch = "garmin_grafana:main"
 health-fetch = "garmin_grafana:main"
+
+[tool.ruff]
+# Target the Python version this project runs under.
+target-version = "py313"
+line-length = 120
+
+# The original upstream garmin_fetch.py (and its sibling import/export
+# scripts) predate any lint config in this fork and are deliberately left
+# additive-only per CLAUDE.md — we don't own their style. Exclude them so
+# ruff only complains about code we actually wrote.
+extend-exclude = [
+    "src/garmin_grafana/garmin_fetch.py",
+    "src/garmin_grafana/garmin_bulk_importer.py",
+    "src/garmin_grafana/fit_activity_importer.py",
+    "src/garmin_grafana/influxdb_exporter.py",
+    "Extra/",
+    ".venv/",
+]
+
+[tool.ruff.lint]
+# Conservative rule set. E+F is pyflakes/pycodestyle errors; I is import
+# ordering; B is bugbear (real bugs, not style); UP is pyupgrade (py313
+# idioms). Can tighten later once everything's green.
+select = ["E", "F", "I", "B", "UP"]
+ignore = [
+    # Long lines in test data / smoke assertions are fine.
+    "E501",
+    # Allow `from __future__ import annotations` on py313 — it's still
+    # valid and we use it in several modules for forward refs.
+    "UP010",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The orchestrator intentionally imports modules for their side effects
+# (garmin_fetch.py's module-level InfluxDB connection setup).
+"src/garmin_grafana/orchestrator.py" = ["F401"]
+# scripts/ are standalone tools that use __main__ idiom.
+"scripts/*.py" = ["B008"]
