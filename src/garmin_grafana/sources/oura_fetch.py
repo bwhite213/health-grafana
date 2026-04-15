@@ -106,6 +106,28 @@ class OuraClient:
         data = self._get("/workout", {"start_date": date_str, "end_date": end})
         return [w for w in data.get("data", []) if w.get("day") == date_str]
 
+    def get_daily_spo2(self, date_str: str) -> dict[str, Any] | None:
+        """Return Oura's daily SpO2 record for ``date_str``, if present."""
+        return self._daily_single("/daily_spo2", date_str)
+
+    def get_daily_stress(self, date_str: str) -> dict[str, Any] | None:
+        """Return Oura's daily stress summary for ``date_str``, if present."""
+        return self._daily_single("/daily_stress", date_str)
+
+    def get_enhanced_tags(self, date_str: str) -> list[dict[str, Any]]:
+        """Return user-logged tags whose ``day`` matches ``date_str``.
+
+        Uses the newer ``/enhanced_tag`` endpoint (the legacy ``/tag`` endpoint
+        is deprecated). Tags are free-form user events like "sick", "alcohol",
+        "travel" — they're what surfaces as Grafana annotations on the
+        dashboards.
+        """
+        end = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+        data = self._get(
+            "/enhanced_tag", {"start_date": date_str, "end_date": end}
+        )
+        return [t for t in data.get("data", []) if t.get("day") == date_str]
+
     def get_heartrate_intraday(
         self, date_str: str
     ) -> list[tuple[datetime, float]]:
@@ -159,6 +181,9 @@ def build_raw_oura_points(
     hr_samples: list[tuple[datetime, float]] | None,
     vo2_max: dict | None = None,
     workouts: list | None = None,
+    daily_spo2: dict | None = None,
+    daily_stress: dict | None = None,
+    enhanced_tags: list | None = None,
 ) -> list[dict[str, Any]]:
     """Emit the per-source ``Oura*`` measurements."""
     out: list[dict[str, Any]] = []
@@ -257,6 +282,45 @@ def build_raw_oura_points(
             }
         )
 
+    if daily_spo2:
+        spo2_raw = daily_spo2.get("spo2_percentage")
+        if isinstance(spo2_raw, dict):
+            spo2_avg = spo2_raw.get("average")
+        elif isinstance(spo2_raw, int | float):
+            spo2_avg = float(spo2_raw)
+        else:
+            spo2_avg = None
+        if spo2_avg is not None:
+            fields: dict[str, Any] = {"spo2_avg": float(spo2_avg)}
+            # breathing_disturbance_index is sometimes reported alongside SpO2.
+            bdi = daily_spo2.get("breathing_disturbance_index")
+            if bdi is not None:
+                fields["breathing_disturbance_index"] = float(bdi)
+            out.append(
+                {
+                    "measurement": "OuraSpO2",
+                    "time": day_ts,
+                    "tags": tags,
+                    "fields": fields,
+                }
+            )
+
+    if daily_stress:
+        fields = {
+            k: daily_stress.get(k)
+            for k in ("stress_high", "recovery_high", "day_summary")
+            if daily_stress.get(k) is not None
+        }
+        if fields:
+            out.append(
+                {
+                    "measurement": "OuraStress",
+                    "time": day_ts,
+                    "tags": tags,
+                    "fields": fields,
+                }
+            )
+
     if workouts:
         for w in workouts:
             if not isinstance(w, dict):
@@ -285,6 +349,34 @@ def build_raw_oura_points(
                     "measurement": "OuraWorkout",
                     "time": _iso(start, day_ts),
                     "tags": workout_tags,
+                    "fields": fields,
+                }
+            )
+
+    if enhanced_tags:
+        # Emit one OuraTags point per logged user event so Grafana annotation
+        # queries can surface them as vertical lines on any timeseries panel.
+        # Each point's `text` field is what Grafana renders in the annotation
+        # tooltip; the tag_type_code + comment go into secondary fields.
+        for t in enhanced_tags:
+            if not isinstance(t, dict):
+                continue
+            text = t.get("text") or t.get("tag_type_code")
+            if not text:
+                continue
+            fields = {"text": str(text)}
+            if t.get("comment"):
+                fields["comment"] = str(t["comment"])
+            if t.get("tag_type_code"):
+                fields["tag_type_code"] = str(t["tag_type_code"])
+            # Use start_time if present (some tags are timed), otherwise noon
+            # of the day so the annotation lands mid-panel.
+            ts = t.get("start_time") or day_ts
+            out.append(
+                {
+                    "measurement": "OuraTags",
+                    "time": _iso(ts, day_ts) if not isinstance(ts, str) else ts,
+                    "tags": tags,
                     "fields": fields,
                 }
             )
@@ -348,6 +440,21 @@ def fetch_day(
     except Exception as err:  # noqa: BLE001
         _log.warning("Oura workouts fetch failed for %s: %s", date_str, err)
         workouts = None
+    try:
+        daily_spo2 = client.get_daily_spo2(date_str)
+    except Exception as err:  # noqa: BLE001
+        _log.debug("Oura daily_spo2 fetch skipped for %s: %s", date_str, err)
+        daily_spo2 = None
+    try:
+        daily_stress = client.get_daily_stress(date_str)
+    except Exception as err:  # noqa: BLE001
+        _log.debug("Oura daily_stress fetch skipped for %s: %s", date_str, err)
+        daily_stress = None
+    try:
+        enhanced_tags = client.get_enhanced_tags(date_str)
+    except Exception as err:  # noqa: BLE001
+        _log.debug("Oura enhanced_tag fetch skipped for %s: %s", date_str, err)
+        enhanced_tags = None
 
     points: list[dict[str, Any]] = []
     points.extend(
@@ -361,6 +468,9 @@ def fetch_day(
             hr_samples=hr_samples,
             vo2_max=vo2_max,
             workouts=workouts,
+            daily_spo2=daily_spo2,
+            daily_stress=daily_stress,
+            enhanced_tags=enhanced_tags,
         )
     )
 
@@ -375,6 +485,8 @@ def fetch_day(
             daily_readiness=daily_readiness,
             vo2_max=vo2_max,
             workouts=workouts,
+            daily_spo2=daily_spo2,
+            daily_stress=daily_stress,
         )
     )
 
@@ -389,7 +501,8 @@ def fetch_day(
         )
 
     _log.info(
-        "Oura: %d points for %s (sleep=%s activity=%s readiness=%s vo2=%s workouts=%d hr_samples=%d)",
+        "Oura: %d points for %s (sleep=%s activity=%s readiness=%s vo2=%s "
+        "workouts=%d spo2=%s stress=%s tags=%d hr_samples=%d)",
         len(points),
         date_str,
         bool(sleep_detail),
@@ -397,6 +510,9 @@ def fetch_day(
         bool(daily_readiness),
         bool(vo2_max),
         len(workouts or []),
+        bool(daily_spo2),
+        bool(daily_stress),
+        len(enhanced_tags or []),
         len(hr_samples or []),
     )
     return points
