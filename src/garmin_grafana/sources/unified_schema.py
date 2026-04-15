@@ -51,6 +51,18 @@ def _drop_nones(fields: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in fields.items() if v is not None}
 
 
+def _append_if_present(points: list, point: dict | None) -> None:
+    """Append a point to ``points`` iff the point builder actually produced one.
+
+    Builders return ``None`` when every field was ``None`` (e.g. Garmin days
+    where the watch wasn't worn). Emitting such a point would produce an
+    InfluxDB line-protocol line with no fields, which the server rejects as
+    ``invalid field format``.
+    """
+    if point is not None:
+        points.append(point)
+
+
 def _iso(ts: datetime | str | None) -> str | None:
     """Normalize timestamps to UTC ISO-8601 strings."""
     if ts is None:
@@ -83,7 +95,7 @@ def unified_sleep_point(
     rhr: float | None = None,
     efficiency: float | None = None,
     score: float | None = None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
     fields = _drop_nones(
         {
             "duration_s": duration_s,
@@ -97,6 +109,8 @@ def unified_sleep_point(
             "score": score,
         }
     )
+    if not fields:
+        return None
     return {
         "measurement": M_SLEEP,
         "time": _iso(time),
@@ -115,19 +129,22 @@ def unified_heart_rate_point(
     hr_avg: float | None = None,
     hr_max: float | None = None,
     hr_min: float | None = None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
+    fields = _drop_nones(
+        {
+            "rhr": rhr,
+            "hr_avg": hr_avg,
+            "hr_max": hr_max,
+            "hr_min": hr_min,
+        }
+    )
+    if not fields:
+        return None
     return {
         "measurement": M_HEART_RATE,
         "time": _iso(time),
         "tags": _base_tags(source, device, database_name),
-        "fields": _drop_nones(
-            {
-                "rhr": rhr,
-                "hr_avg": hr_avg,
-                "hr_max": hr_max,
-                "hr_min": hr_min,
-            }
-        ),
+        "fields": fields,
     }
 
 
@@ -165,20 +182,23 @@ def unified_activity_point(
     calories_total: float | None = None,
     distance_m: float | None = None,
     active_minutes: float | None = None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
+    fields = _drop_nones(
+        {
+            "steps": steps,
+            "calories_active": calories_active,
+            "calories_total": calories_total,
+            "distance_m": distance_m,
+            "active_minutes": active_minutes,
+        }
+    )
+    if not fields:
+        return None
     return {
         "measurement": M_ACTIVITY,
         "time": _iso(time),
         "tags": _base_tags(source, device, database_name),
-        "fields": _drop_nones(
-            {
-                "steps": steps,
-                "calories_active": calories_active,
-                "calories_total": calories_total,
-                "distance_m": distance_m,
-                "active_minutes": active_minutes,
-            }
-        ),
+        "fields": fields,
     }
 
 
@@ -189,12 +209,15 @@ def unified_readiness_point(
     database_name: str,
     time: datetime | str,
     score: float | None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
+    fields = _drop_nones({"score": score})
+    if not fields:
+        return None
     return {
         "measurement": M_READINESS,
         "time": _iso(time),
         "tags": _base_tags(source, device, database_name),
-        "fields": _drop_nones({"score": score}),
+        "fields": fields,
     }
 
 
@@ -242,7 +265,8 @@ def garmin_to_unified(
                 in_bed = (total or 0) + (awake or 0)
                 if in_bed > 0:
                     efficiency = round(100.0 * total / in_bed, 2)
-            points.append(
+            _append_if_present(
+                points,
                 unified_sleep_point(
                     **tag_base,
                     time=sleep_time,
@@ -265,7 +289,8 @@ def garmin_to_unified(
         )
         start = pytz.utc.localize(start)
 
-        points.append(
+        _append_if_present(
+            points,
             unified_activity_point(
                 **tag_base,
                 time=start,
@@ -282,10 +307,11 @@ def garmin_to_unified(
                     + (daily_stats.get("vigorousIntensityMinutes") or 0)
                 )
                 or None,
-            )
+            ),
         )
 
-        points.append(
+        _append_if_present(
+            points,
             unified_heart_rate_point(
                 **tag_base,
                 time=start,
@@ -293,7 +319,7 @@ def garmin_to_unified(
                 hr_avg=daily_stats.get("minAvgHeartRate"),  # Garmin's closest "avg"
                 hr_max=daily_stats.get("maxHeartRate"),
                 hr_min=daily_stats.get("minHeartRate"),
-            )
+            ),
         )
 
         if body_battery_value is None:
@@ -301,12 +327,13 @@ def garmin_to_unified(
                 "bodyBatteryHighestValue"
             )
         if body_battery_value is not None:
-            points.append(
+            _append_if_present(
+                points,
                 unified_readiness_point(
                     **tag_base,
                     time=start,
                     score=float(body_battery_value),
-                )
+                ),
             )
 
     return points
@@ -348,7 +375,8 @@ def oura_to_unified(
         score = None
         if daily_sleep:
             score = daily_sleep.get("score")
-        points.append(
+        _append_if_present(
+            points,
             unified_sleep_point(
                 **tag_base,
                 time=bedtime_end or f"{date_str}T12:00:00+00:00",
@@ -361,11 +389,12 @@ def oura_to_unified(
                 rhr=rhr,
                 efficiency=efficiency,
                 score=score,
-            )
+            ),
         )
 
         # Heart rate summary derived from the sleep window (Oura's most reliable HR data).
-        points.append(
+        _append_if_present(
+            points,
             unified_heart_rate_point(
                 **tag_base,
                 time=bedtime_end or f"{date_str}T12:00:00+00:00",
@@ -373,14 +402,15 @@ def oura_to_unified(
                 hr_avg=sleep_detail.get("average_heart_rate"),
                 hr_max=None,
                 hr_min=sleep_detail.get("lowest_heart_rate"),
-            )
+            ),
         )
 
     # --- Activity ---
     if daily_activity:
         day = daily_activity.get("day") or date_str
         day_ts = f"{day}T12:00:00+00:00"
-        points.append(
+        _append_if_present(
+            points,
             unified_activity_point(
                 **tag_base,
                 time=day_ts,
@@ -393,19 +423,20 @@ def oura_to_unified(
                     + (daily_activity.get("high_activity_time") or 0) / 60
                 )
                 or None,
-            )
+            ),
         )
 
     # --- Readiness ---
     if daily_readiness:
         day = daily_readiness.get("day") or date_str
         day_ts = f"{day}T12:00:00+00:00"
-        points.append(
+        _append_if_present(
+            points,
             unified_readiness_point(
                 **tag_base,
                 time=day_ts,
                 score=daily_readiness.get("score"),
-            )
+            ),
         )
 
     return points
