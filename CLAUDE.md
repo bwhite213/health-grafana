@@ -156,12 +156,20 @@ Follow the Oura pattern:
    stacked breakdowns and intraday streams) must include a "Your typical (14d)"
    target built with `moving_average(mean("field"), 14)` and a field override
    matching alias `/Your typical.*/` that renders it as a dashed gray line.
-   For metrics with clinical norms listed in `config/normal_ranges.yaml`
-   (RHR, sleep duration, sleep efficiency, daily steps), also set
-   `custom.thresholdsStyle.mode: "area"` and populate `thresholds.steps`
-   with the red/yellow/green zones from that config. The existing
-   `Garmin-Grafana-Dashboard.yaml` provider already auto-provisions every
-   `.json` file in this directory — no yaml changes needed.
+   For metrics with clinical norms defined in the catalog in
+   `src/garmin_grafana/normal_ranges.py` (RHR, sleep duration,
+   sleep efficiency, daily steps), do NOT hand-write threshold values —
+   instead add a panel-level `"_normalRangeMetric": "<metric_key>"`
+   marker and leave `thresholds.steps` as a single-entry
+   `[{"color": "green", "value": null}]` placeholder with
+   `thresholdsStyle.mode: "off"`. The fetcher runs
+   `normal_ranges.stamp_dashboards_from_env()` on startup and rewrites
+   those panels' thresholds in place based on `USER_AGE` / `USER_SEX`
+   env vars. To teach it about a new metric, add a catalog entry in
+   `normal_ranges.py` with a citation and add the key to the `resolve()`
+   mapping. The existing `Garmin-Grafana-Dashboard.yaml` provider
+   already auto-provisions every `.json` file in this directory — no
+   yaml changes needed.
 7. Update `discrepancy.py`'s source list if you want pairwise diffs against
    the new source.
 8. Update this file and `README.md` with the new source.

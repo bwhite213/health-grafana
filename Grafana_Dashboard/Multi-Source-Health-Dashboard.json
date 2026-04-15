@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Cross-source view of health data from Garmin, Oura (and future Apple Watch). Shows per-source lines, a cross-source average, and a discrepancy panel highlighting where sources disagree. Every timeseries panel also shows your 14-day rolling personal baseline ('Your typical') as a dashed gray line; metrics with clinical norms (sleep duration, RHR, steps) get a green/yellow/red population band tuned for a 35M (see config/normal_ranges.yaml).",
+  "description": "Cross-source view of health data from Garmin, Oura (and future Apple Watch). Shows per-source lines, a cross-source average, and a discrepancy panel highlighting where sources disagree. Every timeseries panel also shows your 14-day rolling personal baseline ('Your typical') as a dashed gray line; panels marked with '_normalRangeMetric' get a green/yellow/red population band that the fetcher stamps in on startup from USER_AGE / USER_SEX env vars.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -24,18 +24,28 @@
   "panels": [
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 100,
       "panels": [],
       "title": "Sleep",
       "type": "row"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Nightly sleep duration by source. Toggle $source to filter. Green band = CDC/NSF adult recommendation (7-9h). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -45,52 +55,141 @@
             "drawStyle": "line",
             "fillOpacity": 10,
             "gradientMode": "none",
-            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 6,
-            "scaleDistribution": {"type": "linear"},
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "auto",
             "spanNulls": true,
-            "stacking": {"group": "A", "mode": "none"},
-            "thresholdsStyle": {"mode": "area"}
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
           },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [
-            {"color": "red", "value": null},
-            {"color": "yellow", "value": 6},
-            {"color": "green", "value": 7},
-            {"color": "yellow", "value": 9},
-            {"color": "red", "value": 10}
-          ]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 6
+              },
+              {
+                "color": "green",
+                "value": 7
+              },
+              {
+                "color": "yellow",
+                "value": 9
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
           "unit": "h"
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 1},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 1},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
       "id": 1,
+      "_normalRangeMetric": "sleep_duration_hours",
       "options": {
-        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "groupBy": [
-            {"params": ["1d"], "type": "time"},
-            {"params": ["Source"], "type": "tag"},
-            {"params": ["null"], "type": "fill"}
+            {
+              "params": [
+                "1d"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "Source"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
           ],
           "measurement": "UnifiedSleep",
           "orderByTime": "ASC",
@@ -99,12 +198,28 @@
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
-          "select": [[{"params": ["duration_s"], "type": "field"}, {"params": [], "type": "mean"}]],
+          "select": [
+            [
+              {
+                "params": [
+                  "duration_s"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
           "tags": []
         },
         {
           "alias": "Mean (all sources)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "hide": false,
           "query": "SELECT mean(\"duration_s\") / 3600 FROM \"UnifiedSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
@@ -113,7 +228,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"duration_s\"), 14) / 3600 FROM \"UnifiedSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "C",
@@ -124,11 +242,16 @@
       "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "HRV averaged over each night's sleep, per source. Dashed gray line = your 14-day rolling typical. No population band — HRV is too individual for one to be meaningful.",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "HRV averaged over each night's sleep, per source. Dashed gray line = your 14-day rolling typical. No population band \u2014 HRV is too individual for one to be meaningful.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "ms",
             "drawStyle": "line",
@@ -143,26 +266,68 @@
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 1},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 1},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
       "id": 2,
       "options": {
-        "legend": {"calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"hrv_avg\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -170,7 +335,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"hrv_avg\"), 14) FROM \"UnifiedSleep\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -181,32 +349,58 @@
       "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Nightly sleep stages for the selected source only (use $source variable to switch). Stacked to show total time in bed.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "seconds",
             "drawStyle": "bars",
             "fillOpacity": 70,
             "lineWidth": 1,
-            "stacking": {"group": "A", "mode": "normal"}
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
           },
           "unit": "s"
         },
         "overrides": []
       },
-      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 10},
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
       "id": 3,
       "options": {
-        "legend": {"calcs": ["mean"], "displayMode": "list", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "single", "sort": "none"}
+        "legend": {
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "targets": [
         {
           "alias": "Deep",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"deep_s\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -214,7 +408,10 @@
         },
         {
           "alias": "Light",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"light_s\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -222,7 +419,10 @@
         },
         {
           "alias": "REM",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"rem_s\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "C",
@@ -230,7 +430,10 @@
         },
         {
           "alias": "Awake",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"awake_s\") FROM \"UnifiedSleep\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "D",
@@ -242,18 +445,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 19},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
       "id": 101,
       "panels": [],
       "title": "Heart Rate",
       "type": "row"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Resting heart rate reported by each source. Green band = 50-70 bpm (fit-to-normal range for 35M). Dashed gray line = your 14-day rolling typical across all sources.",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Resting heart rate reported by each source. Green band = the fit-to-normal range for your age/sex bracket (stamped in by the fetcher from USER_AGE / USER_SEX). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "bpm",
             "drawStyle": "line",
@@ -263,40 +476,105 @@
             "pointSize": 6,
             "showPoints": "auto",
             "spanNulls": true,
-            "thresholdsStyle": {"mode": "area"}
+            "thresholdsStyle": {
+              "mode": "area"
+            }
           },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [
-            {"color": "red", "value": null},
-            {"color": "yellow", "value": 40},
-            {"color": "green", "value": 50},
-            {"color": "yellow", "value": 70},
-            {"color": "red", "value": 85}
-          ]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 40
+              },
+              {
+                "color": "green",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          },
           "unit": "bpm"
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 1},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 20},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
       "id": 4,
+      "_normalRangeMetric": "resting_heart_rate",
       "options": {
-        "legend": {"calcs": ["mean", "min", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean",
+            "min",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"rhr\") FROM \"UnifiedHeartRate\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -304,7 +582,10 @@
         },
         {
           "alias": "Mean (all sources)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"rhr\") FROM \"UnifiedHeartRate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -312,7 +593,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"rhr\"), 14) FROM \"UnifiedHeartRate\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "C",
@@ -323,11 +607,16 @@
       "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Intraday heart rate samples from all sources overlaid. Useful for visually spotting gaps or disagreement during activity.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "bpm",
             "drawStyle": "line",
@@ -341,16 +630,31 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 20},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
       "id": 5,
       "options": {
-        "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"hr\") FROM \"UnifiedHRIntraday\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(5m), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -362,56 +666,127 @@
     },
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 29},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
       "id": 102,
       "panels": [],
       "title": "Activity",
       "type": "row"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Daily step counts. Bars grouped by source so you can directly compare side-by-side on days you wore multiple devices. Green band = 7500+ (Tudor-Locke 'somewhat active'). Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "steps",
             "drawStyle": "bars",
             "fillOpacity": 80,
             "lineWidth": 1,
-            "thresholdsStyle": {"mode": "area"}
+            "thresholdsStyle": {
+              "mode": "area"
+            }
           },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [
-            {"color": "red", "value": null},
-            {"color": "yellow", "value": 5000},
-            {"color": "green", "value": 7500}
-          ]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000
+              },
+              {
+                "color": "green",
+                "value": 7500
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.drawStyle", "value": "line"},
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 2},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 30},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
       "id": 6,
+      "_normalRangeMetric": "daily_steps",
       "options": {
-        "legend": {"calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "sum",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"steps\") FROM \"UnifiedActivity\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -419,7 +794,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"steps\"), 14) FROM \"UnifiedActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -430,11 +808,16 @@
       "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Active calories burned per day by source. Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "kcal",
             "drawStyle": "line",
@@ -449,26 +832,68 @@
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 1},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 30},
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
       "id": 7,
       "options": {
-        "legend": {"calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"calories_active\") FROM \"UnifiedActivity\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -476,7 +901,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"calories_active\"), 14) FROM \"UnifiedActivity\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -488,18 +916,28 @@
     },
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 39},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
       "id": 103,
       "panels": [],
       "title": "Readiness / Recovery",
       "type": "row"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Normalized 0-100 readiness score. Garmin Body Battery and Oura Readiness are plotted on the same axis — they are NOT identical metrics but both indicate recovery state. Dashed gray line = your 14-day rolling typical across all sources.",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Normalized 0-100 readiness score. Garmin Body Battery and Oura Readiness are plotted on the same axis \u2014 they are NOT identical metrics but both indicate recovery state. Dashed gray line = your 14-day rolling typical across all sources.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisLabel": "score",
             "drawStyle": "line",
@@ -516,26 +954,68 @@
         },
         "overrides": [
           {
-            "matcher": {"id": "byRegexp", "options": "Your typical.*"},
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Your typical.*"
+            },
             "properties": [
-              {"id": "custom.lineStyle", "value": {"dash": [8, 4], "fill": "dash"}},
-              {"id": "custom.lineWidth", "value": 1},
-              {"id": "custom.fillOpacity", "value": 0},
-              {"id": "color", "value": {"mode": "fixed", "fixedColor": "rgba(200,200,200,0.9)"}}
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "rgba(200,200,200,0.9)"
+                }
+              }
             ]
           }
         ]
       },
-      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 40},
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      },
       "id": 8,
       "options": {
-        "legend": {"calcs": ["mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
           "alias": "$tag_Source",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT mean(\"score\") FROM \"UnifiedReadiness\" WHERE (\"Source\" =~ /^$source$/) AND $timeFilter GROUP BY time(1d), \"Source\" fill(null)",
           "rawQuery": true,
           "refId": "A",
@@ -543,7 +1023,10 @@
         },
         {
           "alias": "Your typical (14d)",
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT moving_average(mean(\"score\"), 14) FROM \"UnifiedReadiness\" WHERE $timeFilter GROUP BY time(1d) fill(null)",
           "rawQuery": true,
           "refId": "B",
@@ -555,47 +1038,95 @@
     },
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 49},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 49
+      },
       "id": 104,
       "panels": [],
       "title": "Source Discrepancies",
       "type": "row"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Percent difference between sources on the same day. Rows where pct_diff > 10 are worth investigating — likely a device wasn't worn, fell off, or had a bad reading.",
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Percent difference between sources on the same day. Rows where pct_diff > 10 are worth investigating \u2014 likely a device wasn't worn, fell off, or had a bad reading.",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
-          "custom": {"align": "auto", "cellOptions": {"type": "color-background"}, "inspect": false},
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-background"
+            },
+            "inspect": false
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 10},
-              {"color": "red", "value": 25}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": [
           {
-            "matcher": {"id": "byName", "options": "pct_diff"},
-            "properties": [{"id": "unit", "value": "percent"}]
+            "matcher": {
+              "id": "byName",
+              "options": "pct_diff"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
           }
         ]
       },
-      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 50},
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
       "id": 9,
       "options": {
         "cellHeight": "sm",
-        "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false},
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true
       },
       "targets": [
         {
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT \"Metric\", \"Source_A\", \"Source_B\", \"value_a\", \"value_b\", \"abs_diff\", \"pct_diff\" FROM \"SourceDiscrepancy\" WHERE $timeFilter ORDER BY time DESC LIMIT 100",
           "rawQuery": true,
           "refId": "A",
@@ -606,30 +1137,73 @@
       "type": "table"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Heatmap of sleep-duration disagreement between Garmin and Oura. Brighter = larger percent difference. Gaps = a day where only one source recorded data.",
       "fieldConfig": {
         "defaults": {
-          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}, "scaleDistribution": {"type": "linear"}}
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
         },
         "overrides": []
       },
-      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 62},
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
       "id": 10,
       "options": {
         "calculate": false,
         "cellGap": 2,
-        "color": {"exponent": 0.5, "fill": "dark-orange", "mode": "scheme", "reverse": false, "scale": "exponential", "scheme": "Oranges", "steps": 64},
-        "exemplars": {"color": "rgba(255,0,255,0.7)"},
-        "filterValues": {"le": 1e-9},
-        "legend": {"show": true},
-        "rowsFrame": {"layout": "auto"},
-        "tooltip": {"mode": "single", "showColorScale": false, "yHistogram": false},
-        "yAxis": {"axisPlacement": "left", "reverse": false}
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-09
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
       },
       "targets": [
         {
-          "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
           "query": "SELECT \"pct_diff\" FROM \"SourceDiscrepancy\" WHERE \"Metric\" = 'sleep_duration_s' AND $timeFilter",
           "rawQuery": true,
           "refId": "A",
@@ -643,12 +1217,24 @@
   "refresh": "5m",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["health", "multi-source", "garmin", "oura"],
+  "tags": [
+    "health",
+    "multi-source",
+    "garmin",
+    "oura"
+  ],
   "templating": {
     "list": [
       {
-        "current": {"selected": true, "text": "All", "value": ".*"},
-        "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "garmin_influxdb"
+        },
         "definition": "SHOW TAG VALUES FROM \"UnifiedSleep\" WITH KEY = \"Source\"",
         "hide": 0,
         "includeAll": true,
@@ -666,7 +1252,10 @@
       }
     ]
   },
-  "time": {"from": "now-30d", "to": "now"},
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "",
   "title": "Multi-Source Health",
