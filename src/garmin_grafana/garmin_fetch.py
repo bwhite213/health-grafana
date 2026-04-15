@@ -1514,6 +1514,9 @@ def daily_fetch_write(date_str):
             from .sources import unified_schema
             daily_stats_json = None
             sleep_json = None
+            training_readiness_json = None
+            max_metrics_json = None
+            activities_json = None
             try:
                 daily_stats_json = garmin_obj.get_stats(date_str)
             except Exception as err:
@@ -1522,12 +1525,27 @@ def daily_fetch_write(date_str):
                 sleep_json = garmin_obj.get_sleep_data(date_str)
             except Exception as err:
                 logging.debug(f"Unified mirror: unable to refetch sleep data for {date_str}: {err}")
+            try:
+                training_readiness_json = garmin_obj.get_training_readiness(date_str)
+            except Exception as err:
+                logging.debug(f"Unified mirror: unable to fetch training readiness for {date_str}: {err}")
+            try:
+                max_metrics_json = garmin_obj.get_max_metrics(date_str)
+            except Exception as err:
+                logging.debug(f"Unified mirror: unable to fetch max metrics for {date_str}: {err}")
+            try:
+                activities_json = garmin_obj.get_activities_by_date(date_str, date_str)
+            except Exception as err:
+                logging.debug(f"Unified mirror: unable to fetch activities for {date_str}: {err}")
             unified_points = unified_schema.garmin_to_unified(
                 date_str=date_str,
                 device_name=GARMIN_DEVICENAME,
                 database_name=INFLUXDB_DATABASE,
                 daily_stats=daily_stats_json,
                 sleep_data=sleep_json,
+                training_readiness=training_readiness_json,
+                max_metrics=max_metrics_json,
+                activities=activities_json,
             )
             if unified_points:
                 write_points_to_influxdb(unified_points)

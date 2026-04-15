@@ -96,6 +96,16 @@ class OuraClient:
         candidates.sort(key=lambda s: s.get("total_sleep_duration") or 0, reverse=True)
         return candidates[0]
 
+    def get_vo2_max(self, date_str: str) -> dict[str, Any] | None:
+        """Return Oura's daily VO2 max record for ``date_str``, if present."""
+        return self._daily_single("/vO2_max", date_str)
+
+    def get_workouts(self, date_str: str) -> list[dict[str, Any]]:
+        """Return workouts whose ``day`` matches ``date_str``."""
+        end = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+        data = self._get("/workout", {"start_date": date_str, "end_date": end})
+        return [w for w in data.get("data", []) if w.get("day") == date_str]
+
     def get_heartrate_intraday(
         self, date_str: str
     ) -> list[tuple[datetime, float]]:
@@ -147,6 +157,8 @@ def build_raw_oura_points(
     daily_activity: dict | None,
     daily_readiness: dict | None,
     hr_samples: list[tuple[datetime, float]] | None,
+    vo2_max: dict | None = None,
+    workouts: list | None = None,
 ) -> list[dict[str, Any]]:
     """Emit the per-source ``Oura*`` measurements."""
     out: list[dict[str, Any]] = []
@@ -235,6 +247,48 @@ def build_raw_oura_points(
                 }
             )
 
+    if vo2_max and vo2_max.get("vo2_max") is not None:
+        out.append(
+            {
+                "measurement": "OuraVO2Max",
+                "time": day_ts,
+                "tags": tags,
+                "fields": {"vo2_max": float(vo2_max["vo2_max"])},
+            }
+        )
+
+    if workouts:
+        for w in workouts:
+            if not isinstance(w, dict):
+                continue
+            start = w.get("start_datetime") or day_ts
+            fields = {
+                k: w.get(k)
+                for k in (
+                    "calories",
+                    "distance",
+                    "load",
+                    "average_heart_rate",
+                    "max_heart_rate",
+                )
+                if w.get(k) is not None
+            }
+            if w.get("intensity"):
+                fields["intensity"] = w["intensity"]
+            if not fields:
+                continue
+            workout_tags = {**tags}
+            if w.get("activity"):
+                workout_tags["Activity"] = w["activity"]
+            out.append(
+                {
+                    "measurement": "OuraWorkout",
+                    "time": _iso(start, day_ts),
+                    "tags": workout_tags,
+                    "fields": fields,
+                }
+            )
+
     return out
 
 
@@ -283,6 +337,18 @@ def fetch_day(
             _log.warning("Oura heartrate fetch failed for %s: %s", date_str, err)
             hr_samples = None
 
+    try:
+        vo2_max = client.get_vo2_max(date_str)
+    except Exception as err:  # noqa: BLE001
+        # 404 is expected for users whose ring doesn't have VO2 max yet; log quietly.
+        _log.debug("Oura vO2_max fetch skipped for %s: %s", date_str, err)
+        vo2_max = None
+    try:
+        workouts = client.get_workouts(date_str)
+    except Exception as err:  # noqa: BLE001
+        _log.warning("Oura workouts fetch failed for %s: %s", date_str, err)
+        workouts = None
+
     points: list[dict[str, Any]] = []
     points.extend(
         build_raw_oura_points(
@@ -293,6 +359,8 @@ def fetch_day(
             daily_activity=daily_activity,
             daily_readiness=daily_readiness,
             hr_samples=hr_samples,
+            vo2_max=vo2_max,
+            workouts=workouts,
         )
     )
 
@@ -305,6 +373,8 @@ def fetch_day(
             sleep_detail=sleep_detail,
             daily_activity=daily_activity,
             daily_readiness=daily_readiness,
+            vo2_max=vo2_max,
+            workouts=workouts,
         )
     )
 
@@ -319,12 +389,14 @@ def fetch_day(
         )
 
     _log.info(
-        "Oura: %d points for %s (sleep=%s activity=%s readiness=%s hr_samples=%d)",
+        "Oura: %d points for %s (sleep=%s activity=%s readiness=%s vo2=%s workouts=%d hr_samples=%d)",
         len(points),
         date_str,
         bool(sleep_detail),
         bool(daily_activity),
         bool(daily_readiness),
+        bool(vo2_max),
+        len(workouts or []),
         len(hr_samples or []),
     )
     return points

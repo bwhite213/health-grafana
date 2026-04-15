@@ -33,6 +33,7 @@ COMPARED_METRICS: list[tuple[str, str, str]] = [
     ("UnifiedActivity", "steps", "steps"),
     ("UnifiedActivity", "calories_active", "active_calories"),
     ("UnifiedReadiness", "score", "readiness_score"),
+    ("UnifiedVO2Max", "vo2_max", "vo2_max"),
 ]
 
 

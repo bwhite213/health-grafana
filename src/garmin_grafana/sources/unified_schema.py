@@ -34,6 +34,8 @@ M_HEART_RATE = "UnifiedHeartRate"
 M_HR_INTRADAY = "UnifiedHRIntraday"
 M_ACTIVITY = "UnifiedActivity"
 M_READINESS = "UnifiedReadiness"
+M_VO2_MAX = "UnifiedVO2Max"
+M_WORKOUT = "UnifiedWorkout"
 
 SOURCE_GARMIN = "Garmin"
 SOURCE_OURA = "Oura"
@@ -221,6 +223,65 @@ def unified_readiness_point(
     }
 
 
+def unified_vo2_max_point(
+    *,
+    source: str,
+    device: str,
+    database_name: str,
+    time: datetime | str,
+    vo2_max: float | None,
+) -> dict[str, Any] | None:
+    fields = _drop_nones({"vo2_max": vo2_max})
+    if not fields:
+        return None
+    return {
+        "measurement": M_VO2_MAX,
+        "time": _iso(time),
+        "tags": _base_tags(source, device, database_name),
+        "fields": fields,
+    }
+
+
+def unified_workout_point(
+    *,
+    source: str,
+    device: str,
+    database_name: str,
+    time: datetime | str,
+    activity_type: str | None = None,
+    duration_s: int | None = None,
+    calories: float | None = None,
+    distance_m: float | None = None,
+    hr_avg: float | None = None,
+    hr_max: float | None = None,
+    intensity: str | None = None,
+) -> dict[str, Any] | None:
+    fields = _drop_nones(
+        {
+            "duration_s": duration_s,
+            "calories": calories,
+            "distance_m": distance_m,
+            "hr_avg": hr_avg,
+            "hr_max": hr_max,
+            # Store intensity as a field (string) so it's still queryable even
+            # though it's not numeric.
+            "intensity": intensity,
+        }
+    )
+    if not fields:
+        return None
+    tags = _base_tags(source, device, database_name)
+    # activity_type is promoted to a tag so Grafana can filter by sport.
+    if activity_type:
+        tags["Activity"] = activity_type
+    return {
+        "measurement": M_WORKOUT,
+        "time": _iso(time),
+        "tags": tags,
+        "fields": fields,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Normalizers: native source dict -> list of unified points
 # ---------------------------------------------------------------------------
@@ -234,6 +295,9 @@ def garmin_to_unified(
     daily_stats: dict | None = None,
     sleep_data: dict | None = None,
     body_battery_value: float | None = None,
+    training_readiness: list | None = None,
+    max_metrics: list | None = None,
+    activities: list | None = None,
 ) -> list[dict[str, Any]]:
     """
     Build Unified* points from the raw Garmin Connect dicts that
@@ -241,7 +305,17 @@ def garmin_to_unified(
 
     - ``daily_stats``: return value of ``garmin_obj.get_stats(date_str)``
     - ``sleep_data``:  return value of ``garmin_obj.get_sleep_data(date_str)``
-    - ``body_battery_value``: a single 0-100 score (e.g. wake-time body battery)
+    - ``body_battery_value``: a single 0-100 score (wake-time body battery)
+    - ``training_readiness``: return value of ``garmin_obj.get_training_readiness(date_str)``
+      (list of readiness dicts). When present and it has a numeric ``score``, it
+      is preferred over body battery for ``UnifiedReadiness`` because it's the
+      closest Garmin analogue to Oura Readiness.
+    - ``max_metrics``: return value of ``garmin_obj.get_max_metrics(date_str)``
+      (list of VO2 max dicts). Its ``generic.vo2MaxPreciseValue`` becomes a
+      ``UnifiedVO2Max`` point.
+    - ``activities``: return value of ``garmin_obj.get_activities_by_date(d, d)``
+      (list of activity summary dicts). Each becomes a ``UnifiedWorkout`` point
+      tagged by ``activityType.typeKey``.
 
     All arguments are optional; whichever dicts are provided will be mapped.
     """
@@ -322,17 +396,94 @@ def garmin_to_unified(
             ),
         )
 
-        if body_battery_value is None:
-            body_battery_value = daily_stats.get("bodyBatteryAtWakeTime") or daily_stats.get(
-                "bodyBatteryHighestValue"
-            )
-        if body_battery_value is not None:
+        # Readiness: prefer Training Readiness (direct analogue to Oura Readiness)
+        # when available, fall back to Body Battery otherwise.
+        readiness_score = None
+        readiness_time = start
+        if training_readiness:
+            # Garmin returns a list of readiness snapshots through the day; pick
+            # the latest one with a numeric score.
+            for tr in reversed(training_readiness):
+                if isinstance(tr, dict) and tr.get("score") is not None:
+                    readiness_score = float(tr["score"])
+                    ts = tr.get("timestamp")
+                    if ts:
+                        try:
+                            readiness_time = pytz.utc.localize(
+                                datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%f")
+                            )
+                        except (ValueError, TypeError):
+                            pass
+                    break
+        if readiness_score is None:
+            if body_battery_value is None:
+                body_battery_value = (
+                    daily_stats.get("bodyBatteryAtWakeTime")
+                    or daily_stats.get("bodyBatteryHighestValue")
+                )
+            if body_battery_value is not None:
+                readiness_score = float(body_battery_value)
+        if readiness_score is not None:
             _append_if_present(
                 points,
                 unified_readiness_point(
                     **tag_base,
-                    time=start,
-                    score=float(body_battery_value),
+                    time=readiness_time,
+                    score=readiness_score,
+                ),
+            )
+
+    # --- VO2 max ---
+    if max_metrics:
+        try:
+            generic = (max_metrics[0] or {}).get("generic") or {}
+            vo2_max = generic.get("vo2MaxPreciseValue") or generic.get("vo2MaxValue")
+        except (IndexError, AttributeError):
+            vo2_max = None
+        if vo2_max is not None:
+            # Garmin's VO2 max is a daily value; stamp it at 00:00 UTC of the
+            # date to match the raw VO2_Max measurement.
+            day_ts = datetime.strptime(date_str, "%Y-%m-%d").replace(
+                hour=0, tzinfo=pytz.utc
+            )
+            _append_if_present(
+                points,
+                unified_vo2_max_point(
+                    **tag_base,
+                    time=day_ts,
+                    vo2_max=float(vo2_max),
+                ),
+            )
+
+    # --- Workouts ---
+    if activities:
+        for activity in activities:
+            if not isinstance(activity, dict):
+                continue
+            start_gmt = activity.get("startTimeGMT")
+            if not start_gmt:
+                continue
+            try:
+                workout_time = datetime.strptime(
+                    start_gmt, "%Y-%m-%d %H:%M:%S"
+                ).replace(tzinfo=pytz.utc)
+            except ValueError:
+                continue
+            activity_type = (activity.get("activityType") or {}).get("typeKey")
+            # Garmin stores duration in seconds as a float.
+            duration = activity.get("duration") or activity.get("elapsedDuration")
+            _append_if_present(
+                points,
+                unified_workout_point(
+                    **tag_base,
+                    time=workout_time,
+                    activity_type=activity_type,
+                    duration_s=int(duration) if duration is not None else None,
+                    calories=activity.get("calories"),
+                    distance_m=activity.get("distance"),
+                    hr_avg=activity.get("averageHR"),
+                    hr_max=activity.get("maxHR"),
+                    intensity=None,  # Garmin doesn't supply a simple intensity label
                 ),
             )
 
@@ -348,6 +499,8 @@ def oura_to_unified(
     sleep_detail: dict | None = None,
     daily_activity: dict | None = None,
     daily_readiness: dict | None = None,
+    vo2_max: dict | None = None,
+    workouts: list | None = None,
 ) -> list[dict[str, Any]]:
     """
     Build Unified* points from Oura Cloud API v2 response dicts.
@@ -357,6 +510,8 @@ def oura_to_unified(
       - /sleep             -> ``sleep_detail``    (stages, hrv, rhr, efficiency)
       - /daily_activity    -> ``daily_activity``  (steps, calories, active time)
       - /daily_readiness   -> ``daily_readiness`` (readiness score 0-100)
+      - /vO2_max           -> ``vo2_max``         (single daily VO2 max value)
+      - /workout           -> ``workouts``        (list of workout sessions)
     """
     points: list[dict[str, Any]] = []
     tag_base = {"source": SOURCE_OURA, "device": device_name, "database_name": database_name}
@@ -438,5 +593,50 @@ def oura_to_unified(
                 score=daily_readiness.get("score"),
             ),
         )
+
+    # --- VO2 max ---
+    if vo2_max:
+        day = vo2_max.get("day") or date_str
+        day_ts = f"{day}T00:00:00+00:00"
+        _append_if_present(
+            points,
+            unified_vo2_max_point(
+                **tag_base,
+                time=day_ts,
+                vo2_max=vo2_max.get("vo2_max"),
+            ),
+        )
+
+    # --- Workouts ---
+    if workouts:
+        for w in workouts:
+            if not isinstance(w, dict):
+                continue
+            start_ts = w.get("start_datetime") or w.get("day")
+            if not start_ts:
+                continue
+            end_ts = w.get("end_datetime")
+            duration_s: int | None = None
+            if start_ts and end_ts:
+                try:
+                    start_dt = datetime.fromisoformat(start_ts.replace("Z", "+00:00"))
+                    end_dt = datetime.fromisoformat(end_ts.replace("Z", "+00:00"))
+                    duration_s = int((end_dt - start_dt).total_seconds())
+                except ValueError:
+                    duration_s = None
+            _append_if_present(
+                points,
+                unified_workout_point(
+                    **tag_base,
+                    time=start_ts,
+                    activity_type=w.get("activity"),
+                    duration_s=duration_s,
+                    calories=w.get("calories"),
+                    distance_m=w.get("distance"),
+                    hr_avg=w.get("average_heart_rate"),
+                    hr_max=w.get("max_heart_rate"),
+                    intensity=w.get("intensity"),
+                ),
+            )
 
     return points

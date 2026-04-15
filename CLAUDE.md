@@ -84,7 +84,9 @@ Every source also writes to a normalized set of measurements tagged by
 | `UnifiedHeartRate`    | `Source`, `Device`, `User_ID` | `rhr`, `hr_avg`, `hr_max`, `hr_min`                                            |
 | `UnifiedHRIntraday`   | `Source`, `Device`, `User_ID` | `hr`                                                                           |
 | `UnifiedActivity`     | `Source`, `Device`, `User_ID` | `steps`, `calories_active`, `calories_total`, `distance_m`, `active_minutes`   |
-| `UnifiedReadiness`    | `Source`, `Device`, `User_ID` | `score` (0–100: Oura Readiness, Garmin Body Battery, etc.)                     |
+| `UnifiedReadiness`    | `Source`, `Device`, `User_ID` | `score` (0–100: prefers Garmin Training Readiness, falls back to Body Battery; Oura Readiness) |
+| `UnifiedVO2Max`       | `Source`, `Device`, `User_ID` | `vo2_max`                                                                      |
+| `UnifiedWorkout`      | `Source`, `Device`, `User_ID`, `Activity` | `duration_s`, `calories`, `distance_m`, `hr_avg`, `hr_max`, `intensity` |
 | `SourceDiscrepancy`   | `Metric`, `Source_A`, `Source_B` | `value_a`, `value_b`, `abs_diff`, `pct_diff`                                |
 
 `Source` values currently used: `Garmin`, `Oura`. Future: `Apple`.
