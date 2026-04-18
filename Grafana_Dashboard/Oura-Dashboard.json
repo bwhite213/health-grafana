@@ -58,8 +58,8 @@
       },
       "id": 200,
       "options": {
-        "content": "# AI Health Summary\n\n*Waiting for first summary generation...*\n\n*Set ANTHROPIC_API_KEY in override-default-vars.env to enable.*",
-        "defaultContent": "# AI Health Summary\n\n*No summary available yet. Set ANTHROPIC_API_KEY and wait for a fetch cycle.*",
+        "content": "{{{summary}}}",
+        "defaultContent": "# AI Health Summary\n\n*Waiting for first summary generation. Set ANTHROPIC_API_KEY and wait for a fetch cycle.*",
         "editor": {
           "format": "auto",
           "language": "markdown"
