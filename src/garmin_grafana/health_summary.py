@@ -37,8 +37,7 @@ USER_SEX = os.getenv("USER_SEX", "").strip()
 SYSTEM_PROMPT = """\
 You are an expert wellness doctor reviewing a patient's health data from \
 wearable devices and lab work. Provide a concise, actionable summary in \
-HTML format (not markdown). Use <h3> for section headers, <ul>/<li> for \
-bullet points, <strong> for emphasis, and <p> for paragraphs. \
+markdown format. \
 Structure your response with:
 
 1. **Key Findings** — 3-5 bullet points highlighting what stands out \
@@ -185,13 +184,23 @@ def _generate_summary(data_text: str, profile_line: str) -> str | None:
 
 
 def _write_summary(influx_client, dashboard: str, summary: str, data_hash: str) -> None:
-    """Write the summary to InfluxDB."""
+    """Write the summary to InfluxDB.
+
+    InfluxDB escapes newlines in string fields as literal ``\\n``, which
+    breaks markdown rendering in the Dynamic Text Grafana plugin. We
+    convert newlines to ``<br>`` (inline HTML that markdown renderers
+    pass through) before storing, so the plugin can render the summary
+    correctly without any client-side fixups.
+    """
+    # Convert markdown newlines to <br> so InfluxDB's escaping doesn't
+    # break rendering. Double newlines (paragraph breaks) get <br><br>.
+    summary_flat = summary.replace("\n", "<br>")
     point = {
         "measurement": "AIHealthSummary",
         "time": datetime.now(tz=pytz.utc).isoformat(),
         "tags": {"dashboard": dashboard},
         "fields": {
-            "summary": summary,
+            "summary": summary_flat,
             "data_hash": data_hash,
             "model": MODEL,
         },
