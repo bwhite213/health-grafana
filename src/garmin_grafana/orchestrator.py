@@ -30,7 +30,7 @@ import pytz
 # Importing garmin_fetch is what actually connects to InfluxDB, logs in to
 # Garmin, and defines the per-day fetch functions. We intentionally reuse
 # its module-level state rather than duplicating it.
-from . import discrepancy, garmin_fetch, normal_ranges
+from . import discrepancy, garmin_fetch, health_summary, normal_ranges
 from .sources import oura_fetch
 
 _log = logging.getLogger(__name__)
@@ -136,6 +136,13 @@ def _run_discrepancy_pass() -> None:
         _log.warning("Discrepancy pass failed: %s", err)
 
 
+def _run_health_summaries() -> None:
+    try:
+        health_summary.generate_summaries(garmin_fetch.influxdbclient)
+    except Exception as err:  # noqa: BLE001
+        _log.warning("AI health summary generation failed: %s", err)
+
+
 DASHBOARD_DIR = os.getenv("DASHBOARD_DIR", "/app/Grafana_Dashboard")
 
 
@@ -157,6 +164,7 @@ def main() -> None:
                 oura_client, garmin_fetch.MANUAL_START_DATE, garmin_fetch.MANUAL_END_DATE
             )
         _run_discrepancy_pass()
+        _run_health_summaries()
         _log.info(
             "Bulk update success : fetched all available health metrics for %s to %s",
             garmin_fetch.MANUAL_START_DATE,
@@ -230,6 +238,7 @@ def main() -> None:
             if oura_client is not None:
                 _oura_fetch_range(oura_client, start_str, end_str)
             _run_discrepancy_pass()
+            _run_health_summaries()
             last_influxdb_sync_time_UTC = last_watch_sync_time_UTC
         else:
             _log.info(
@@ -246,6 +255,7 @@ def main() -> None:
                 ).strftime("%Y-%m-%d")
                 _oura_fetch_range(oura_client, yday_local, today_local)
                 _run_discrepancy_pass()
+                _run_health_summaries()
 
         _touch_heartbeat()
         _ping_healthcheck()

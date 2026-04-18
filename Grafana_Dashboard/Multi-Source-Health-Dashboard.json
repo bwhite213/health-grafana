@@ -41,12 +41,58 @@
   "links": [],
   "panels": [
     {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "AI-generated wellness summary updated each fetch cycle. Requires ANTHROPIC_API_KEY in env.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 200,
+      "options": {
+        "content": "# AI Health Summary\n\n*Waiting for first summary generation...*\n\n*Set ANTHROPIC_API_KEY in override-default-vars.env to enable.*",
+        "defaultContent": "# AI Health Summary\n\n*No summary available yet. Set ANTHROPIC_API_KEY and wait for a fetch cycle.*",
+        "editor": {
+          "format": "auto",
+          "language": "markdown"
+        },
+        "externalStyles": [],
+        "helpers": "",
+        "renderMode": "everyRow",
+        "status": "never",
+        "styles": "",
+        "wrap": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT last(\"summary\") AS \"summary\" FROM \"AIHealthSummary\" WHERE \"dashboard\" = 'multi_source'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "AI Wellness Summary",
+      "type": "marcusolsson-dynamictext-panel"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 11
       },
       "id": 100,
       "panels": [],
@@ -162,7 +208,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 12
       },
       "id": 1,
       "_normalRangeMetric": "sleep_duration_hours",
@@ -322,7 +368,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 12
       },
       "id": 2,
       "options": {
@@ -395,7 +441,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 21
       },
       "id": 3,
       "options": {
@@ -467,7 +513,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 30
       },
       "id": 101,
       "panels": [],
@@ -566,7 +612,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 20
+        "y": 31
       },
       "id": 4,
       "_normalRangeMetric": "resting_heart_rate",
@@ -652,7 +698,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 20
+        "y": 31
       },
       "id": 5,
       "options": {
@@ -688,7 +734,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 40
       },
       "id": 102,
       "panels": [],
@@ -779,7 +825,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 30
+        "y": 41
       },
       "id": 6,
       "_normalRangeMetric": "daily_steps",
@@ -888,7 +934,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 41
       },
       "id": 7,
       "options": {
@@ -938,7 +984,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 50
       },
       "id": 103,
       "panels": [],
@@ -1010,7 +1056,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 51
       },
       "id": 8,
       "options": {
@@ -1060,7 +1106,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 60
       },
       "id": 105,
       "panels": [],
@@ -1168,7 +1214,7 @@
         "h": 9,
         "w": 16,
         "x": 0,
-        "y": 50
+        "y": 61
       },
       "id": 11,
       "_normalRangeMetric": "vo2_max",
@@ -1272,7 +1318,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 50
+        "y": 61
       },
       "id": 12,
       "options": {
@@ -1313,7 +1359,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 70
       },
       "id": 104,
       "panels": [],
@@ -1377,7 +1423,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 60
+        "y": 71
       },
       "id": 9,
       "options": {
@@ -1432,7 +1478,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 83
       },
       "id": 10,
       "options": {

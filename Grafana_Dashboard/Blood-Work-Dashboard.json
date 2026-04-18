@@ -1,5 +1,20 @@
 {
-  "annotations": {"list": [{"builtIn": 1, "datasource": {"type": "grafana", "uid": "-- Grafana --"}, "enable": true, "hide": true, "iconColor": "rgba(0, 211, 255, 1)", "name": "Annotations & Alerts", "type": "dashboard"}]},
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
   "description": "Blood test results from Rythm Health. Each key biomarker gets its own panel with Rythm's 'Performance Range' (green = optimal). Import new results via scripts/import_blood_test.py.",
   "editable": true,
   "fiscalYearStartMonth": 0,
@@ -7,201 +22,1800 @@
   "id": null,
   "links": [],
   "panels": [
-    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}, "id": 100, "panels": [], "title": "Lipid Panel (Cardiovascular Risk)", "type": "row"},
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "ApoB is the single best predictor of atherosclerotic cardiovascular disease. Performance range: 50-80 mg/dL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "red", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 50}, {"color": "green", "value": 50}, {"color": "yellow", "value": 80}, {"color": "red", "value": 90}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 1}, "id": 1,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "ApoB", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"apob\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "ApoB", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "LDL cholesterol. Lower is better for cardiovascular risk. Standard range 40-150.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "orange", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 100}, {"color": "red", "value": 130}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 1}, "id": 2,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "LDL", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"ldl\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "LDL Cholesterol", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "HDL cholesterol — protective. Higher is better. Performance range: 56-100 mg/dL. Cardio exercise is the most effective way to raise HDL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "blue", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 40}, {"color": "green", "value": 56}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 1}, "id": 3,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "HDL", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"hdl\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "HDL Cholesterol", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Triglycerides. Performance range: 35-90 mg/dL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "purple", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}, {"color": "green", "value": 35}, {"color": "yellow", "value": 90}, {"color": "red", "value": 149}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 9}, "id": 4,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Triglycerides", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"triglycerides\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Triglycerides", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Total Cholesterol. Standard range 100-240 mg/dL. Context matters — high total chol with high HDL is different from high total chol with high LDL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "semi-dark-orange", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 200}, {"color": "red", "value": 240}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 9}, "id": 5,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Total Cholesterol", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"total_cholesterol\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Total Cholesterol", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Remnant Cholesterol. Performance range: 0-20 mg/dL. Emerging marker — remnant particles are highly atherogenic.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-red", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 20}, {"color": "red", "value": 24}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 9}, "id": 6,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Remnant Cholesterol", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"remnant_cholesterol\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Remnant Cholesterol", "type": "timeseries"
-    },
-    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 17}, "id": 101, "panels": [], "title": "Lipid Ratios", "type": "row"},
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Total Chol/HDL Ratio. Performance range: 0-3. Lower is better.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "orange", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 3}, {"color": "red", "value": 5.1}]}, "unit": "none"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 18}, "id": 7,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Total Chol/HDL", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"total_chol_hdl_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Total Chol/HDL Ratio", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Triglycerides/HDL Ratio. Performance range: 0-1.25. Strong insulin resistance marker — lower is better.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "purple", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1.25}, {"color": "red", "value": 2.5}]}, "unit": "none"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 18}, "id": 8,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Trig/HDL", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"trig_hdl_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Triglycerides/HDL Ratio", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "LDL/ApoB Ratio. Performance range: 1.35-1.65. Indicates LDL particle size — higher ratio = larger (less atherogenic) particles.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-blue", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 1.2}, {"color": "green", "value": 1.35}, {"color": "yellow", "value": 1.65}, {"color": "red", "value": 2.0}]}, "unit": "none"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 18}, "id": 9,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "LDL/ApoB", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"ldl_apob_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "LDL/ApoB Ratio", "type": "timeseries"
-    },
-    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 26}, "id": 102, "panels": [], "title": "Inflammation & Metabolic", "type": "row"},
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "hs-CRP — top cardiovascular inflammation marker. Performance range: 0-1 mg/L (low risk). AHA: <1 low risk, 1-3 moderate, >3 high risk.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "red", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 3}]}, "unit": "mg/L"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 27}, "id": 10,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "hs-CRP", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"hscrp\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "hs-CRP (Cardiovascular Inflammation)", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Vitamin D. Performance range: 55-80 ng/mL. Affects cardiovascular function, immune health, testosterone production.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "yellow", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 30}, {"color": "green", "value": 55}, {"color": "yellow", "value": 80}, {"color": "red", "value": 100}]}, "unit": "ng/mL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 27}, "id": 11,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Vitamin D", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"vitamin_d\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Vitamin D", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Ferritin (iron stores). Performance range: 100-400 ng/mL. Too low = fatigue/anemia; too high = inflammation/iron overload.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-orange", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 29}, {"color": "green", "value": 100}, {"color": "yellow", "value": 400}, {"color": "red", "value": 575}]}, "unit": "ng/mL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 27}, "id": 12,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Ferritin", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"ferritin\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Ferritin", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Creatinine (kidney function). Performance range: 0.8-1.1 mg/dL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-green", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}, {"color": "green", "value": 0.8}, {"color": "yellow", "value": 1.1}, {"color": "red", "value": 1.2}]}, "unit": "mg/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 35}, "id": 13,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Creatinine", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"creatinine\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Creatinine", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Albumin (liver function / nutrition). Performance range: 4-5 g/dL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-purple", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 3.5}, {"color": "green", "value": 4}, {"color": "yellow", "value": 5}, {"color": "red", "value": 5.2}]}, "unit": "g/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 35}, "id": 14,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Albumin", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"albumin\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Albumin", "type": "timeseries"
-    },
-    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 43}, "id": 103, "panels": [], "title": "Hormones", "type": "row"},
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Total Testosterone. Performance range: 700-1100 ng/dL. Directly impacts cardiovascular recovery, body composition, and energy.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "blue", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 200}, {"color": "green", "value": 700}, {"color": "yellow", "value": 1100}, {"color": "red", "value": 1500}]}, "unit": "ng/dL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 44}, "id": 20,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Total T", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"total_testosterone\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Total Testosterone", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Free Testosterone. Performance range: 120-180 pg/mL. The bioavailable fraction — more actionable than total T.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-blue", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 46}, {"color": "green", "value": 120}, {"color": "yellow", "value": 180}, {"color": "red", "value": 224}]}, "unit": "pg/mL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 44}, "id": 21,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Free T", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"free_testosterone\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Free Testosterone", "type": "timeseries"
-    },
-    {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
-      "description": "Estrogen. Performance range: 20-30 pg/mL. SHBG performance range: 30-50 nmol/L.",
-      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}, "unit": "none"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 44}, "id": 22,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "AI-generated wellness summary updated each fetch cycle. Requires ANTHROPIC_API_KEY in env.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 200,
+      "options": {
+        "content": "# AI Health Summary\n\n*Waiting for first summary generation...*\n\n*Set ANTHROPIC_API_KEY in override-default-vars.env to enable.*",
+        "defaultContent": "# AI Health Summary\n\n*No summary available yet. Set ANTHROPIC_API_KEY and wait for a fetch cycle.*",
+        "editor": {
+          "format": "auto",
+          "language": "markdown"
+        },
+        "externalStyles": [],
+        "helpers": "",
+        "renderMode": "everyRow",
+        "status": "never",
+        "styles": "",
+        "wrap": true
+      },
       "targets": [
-        {"alias": "Estrogen (pg/mL)", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"estrogen\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"},
-        {"alias": "SHBG (nmol/L)", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"shbg\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "B", "resultFormat": "time_series"}
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT last(\"summary\") AS \"summary\" FROM \"AIHealthSummary\" WHERE \"dashboard\" = 'blood_work'",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
       ],
-      "title": "Estrogen & SHBG", "type": "timeseries"
+      "title": "AI Wellness Summary",
+      "type": "marcusolsson-dynamictext-panel"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 100,
+      "panels": [],
+      "title": "Lipid Panel (Cardiovascular Risk)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "ApoB is the single best predictor of atherosclerotic cardiovascular disease. Performance range: 50-80 mg/dL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 12
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "ApoB",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"apob\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "ApoB",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "LDL cholesterol. Lower is better for cardiovascular risk. Standard range 40-150.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 130
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 12
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "LDL",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"ldl\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "LDL Cholesterol",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "HDL cholesterol \u2014 protective. Higher is better. Performance range: 56-100 mg/dL. Cardio exercise is the most effective way to raise HDL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 40
+              },
+              {
+                "color": "green",
+                "value": 56
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 12
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "HDL",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"hdl\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "HDL Cholesterol",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Triglycerides. Performance range: 35-90 mg/dL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 35
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "red",
+                "value": 149
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 20
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Triglycerides",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"triglycerides\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Triglycerides",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Total Cholesterol. Standard range 100-240 mg/dL. Context matters \u2014 high total chol with high HDL is different from high total chol with high LDL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 200
+              },
+              {
+                "color": "red",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 20
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Total Cholesterol",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"total_cholesterol\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total Cholesterol",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Remnant Cholesterol. Performance range: 0-20 mg/dL. Emerging marker \u2014 remnant particles are highly atherogenic.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 24
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 20
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Remnant Cholesterol",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"remnant_cholesterol\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Remnant Cholesterol",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 101,
+      "panels": [],
+      "title": "Lipid Ratios",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Total Chol/HDL Ratio. Performance range: 0-3. Lower is better.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 3
+              },
+              {
+                "color": "red",
+                "value": 5.1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 29
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Total Chol/HDL",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"total_chol_hdl_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total Chol/HDL Ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Triglycerides/HDL Ratio. Performance range: 0-1.25. Strong insulin resistance marker \u2014 lower is better.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.25
+              },
+              {
+                "color": "red",
+                "value": 2.5
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 29
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Trig/HDL",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"trig_hdl_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Triglycerides/HDL Ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "LDL/ApoB Ratio. Performance range: 1.35-1.65. Indicates LDL particle size \u2014 higher ratio = larger (less atherogenic) particles.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1.2
+              },
+              {
+                "color": "green",
+                "value": 1.35
+              },
+              {
+                "color": "yellow",
+                "value": 1.65
+              },
+              {
+                "color": "red",
+                "value": 2.0
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 29
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "LDL/ApoB",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"ldl_apob_ratio\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "LDL/ApoB Ratio",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 102,
+      "panels": [],
+      "title": "Inflammation & Metabolic",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "hs-CRP \u2014 top cardiovascular inflammation marker. Performance range: 0-1 mg/L (low risk). AHA: <1 low risk, 1-3 moderate, >3 high risk.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "mg/L"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 38
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "hs-CRP",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"hscrp\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "hs-CRP (Cardiovascular Inflammation)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Vitamin D. Performance range: 55-80 ng/mL. Affects cardiovascular function, immune health, testosterone production.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 30
+              },
+              {
+                "color": "green",
+                "value": 55
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "ng/mL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 38
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Vitamin D",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"vitamin_d\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Vitamin D",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Ferritin (iron stores). Performance range: 100-400 ng/mL. Too low = fatigue/anemia; too high = inflammation/iron overload.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 29
+              },
+              {
+                "color": "green",
+                "value": 100
+              },
+              {
+                "color": "yellow",
+                "value": 400
+              },
+              {
+                "color": "red",
+                "value": 575
+              }
+            ]
+          },
+          "unit": "ng/mL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 38
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Ferritin",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"ferritin\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Ferritin",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Creatinine (kidney function). Performance range: 0.8-1.1 mg/dL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-green",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.8
+              },
+              {
+                "color": "yellow",
+                "value": 1.1
+              },
+              {
+                "color": "red",
+                "value": 1.2
+              }
+            ]
+          },
+          "unit": "mg/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 46
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Creatinine",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"creatinine\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Creatinine",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Albumin (liver function / nutrition). Performance range: 4-5 g/dL.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-purple",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 3.5
+              },
+              {
+                "color": "green",
+                "value": 4
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 5.2
+              }
+            ]
+          },
+          "unit": "g/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 46
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Albumin",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"albumin\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Albumin",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 103,
+      "panels": [],
+      "title": "Hormones",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Total Testosterone. Performance range: 700-1100 ng/dL. Directly impacts cardiovascular recovery, body composition, and energy.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 200
+              },
+              {
+                "color": "green",
+                "value": 700
+              },
+              {
+                "color": "yellow",
+                "value": 1100
+              },
+              {
+                "color": "red",
+                "value": 1500
+              }
+            ]
+          },
+          "unit": "ng/dL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 55
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Total T",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"total_testosterone\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total Testosterone",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Free Testosterone. Performance range: 120-180 pg/mL. The bioavailable fraction \u2014 more actionable than total T.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-blue",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 46
+              },
+              {
+                "color": "green",
+                "value": 120
+              },
+              {
+                "color": "yellow",
+                "value": 180
+              },
+              {
+                "color": "red",
+                "value": 224
+              }
+            ]
+          },
+          "unit": "pg/mL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 55
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Free T",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"free_testosterone\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Free Testosterone",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
+      "description": "Estrogen. Performance range: 20-30 pg/mL. SHBG performance range: 30-50 nmol/L.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 55
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Estrogen (pg/mL)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"estrogen\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "SHBG (nmol/L)",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"shbg\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Estrogen & SHBG",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "TSH (Thyroid Stimulating Hormone). Performance range: 0.5-2.5 uIU/mL.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-green", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 0.5}, {"color": "yellow", "value": 2.5}, {"color": "red", "value": 4.5}]}, "unit": "uIU/mL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 52}, "id": 23,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "TSH", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"tsh\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "TSH", "type": "timeseries"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-green",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.5
+              },
+              {
+                "color": "yellow",
+                "value": 2.5
+              },
+              {
+                "color": "red",
+                "value": 4.5
+              }
+            ]
+          },
+          "unit": "uIU/mL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 63
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "TSH",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"tsh\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "TSH",
+      "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "Free T3 (active thyroid hormone). Performance range: 3.4-4.4 pg/mL. Drives metabolic rate and cardiovascular efficiency.",
-      "fieldConfig": {"defaults": {"color": {"fixedColor": "dark-yellow", "mode": "fixed"}, "custom": {"drawStyle": "line", "fillOpacity": 0, "lineWidth": 2, "pointSize": 10, "showPoints": "always", "spanNulls": true, "thresholdsStyle": {"mode": "area"}}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 2}, {"color": "green", "value": 3.4}, {"color": "yellow", "value": 4.4}, {"color": "red", "value": 5}]}, "unit": "pg/mL"}, "overrides": []},
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 52}, "id": 24,
-      "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single"}},
-      "targets": [{"alias": "Free T3", "datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT \"free_t3\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC", "rawQuery": true, "refId": "A", "resultFormat": "time_series"}],
-      "title": "Free T3", "type": "timeseries"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-yellow",
+            "mode": "fixed"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "lineWidth": 2,
+            "pointSize": 10,
+            "showPoints": "always",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 3.4
+              },
+              {
+                "color": "yellow",
+                "value": 4.4
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "pg/mL"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 63
+      },
+      "id": 24,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Free T3",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT \"free_t3\" FROM \"BloodTest\" WHERE $timeFilter ORDER BY time ASC",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Free T3",
+      "type": "timeseries"
     },
-    {"collapsed": false, "gridPos": {"h": 1, "w": 24, "x": 0, "y": 60}, "id": 104, "panels": [], "title": "All Results (Table)", "type": "row"},
     {
-      "datasource": {"type": "influxdb", "uid": "garmin_influxdb"},
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 71
+      },
+      "id": 104,
+      "panels": [],
+      "title": "All Results (Table)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "garmin_influxdb"
+      },
       "description": "All biomarkers from the most recent blood test.",
-      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "custom": {"align": "auto", "cellOptions": {"type": "auto"}, "inspect": false}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []},
-      "gridPos": {"h": 14, "w": 24, "x": 0, "y": 61}, "id": 30,
-      "options": {"cellHeight": "sm", "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false}, "showHeader": true, "sortBy": [{"displayName": "Time", "desc": true}]},
-      "targets": [{"datasource": {"type": "influxdb", "uid": "garmin_influxdb"}, "query": "SELECT * FROM \"BloodTest\" WHERE $timeFilter ORDER BY time DESC LIMIT 1", "rawQuery": true, "refId": "A", "resultFormat": "table"}],
-      "title": "Latest blood test results", "type": "table"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 72
+      },
+      "id": 30,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "garmin_influxdb"
+          },
+          "query": "SELECT * FROM \"BloodTest\" WHERE $timeFilter ORDER BY time DESC LIMIT 1",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Latest blood test results",
+      "type": "table"
     }
   ],
   "refresh": "",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["health", "blood-work", "lab"],
-  "templating": {"list": []},
-  "time": {"from": "now-1y", "to": "now"},
+  "tags": [
+    "health",
+    "blood-work",
+    "lab"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1y",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "",
   "title": "Blood Work",

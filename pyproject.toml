@@ -5,6 +5,7 @@ description = "Multi-source personal health data (Garmin + Oura) into InfluxDB +
 readme = "README.md"
 requires-python = "==3.13.*"
 dependencies = [
+    "anthropic>=0.42.0",
     "dotenv==0.9.9",
     "fitparse==1.2.0",
     "garminconnect==0.3.2",
