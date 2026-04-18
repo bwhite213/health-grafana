@@ -21,3 +21,6 @@ actions-runner/
 
 # Local docker-compose override (tracked template is compose-example.yml)
 docker-compose.yml
+
+# Claude Code local session state (hooks, slash commands, etc.)
+.claude/

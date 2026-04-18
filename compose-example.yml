@@ -44,6 +44,10 @@ services:
       #   USER_SEX         male | female
       #   USER_HEIGHT_CM   integer cm (reserved; currently unused)
       #   USER_WEIGHT_KG   integer kg (reserved; currently unused)
+      #
+      # AI-powered health summary (optional — skipped if key is missing):
+      #   ANTHROPIC_API_KEY   API key from console.anthropic.com
+      #   HEALTH_SUMMARY_MODEL  model to use (default: claude-haiku-4-5-20251001)
       #####################################################################################
       # The following ENV variables are required only if you are using influxdb V3 (You won't have to set the above )
       #####################################################################################
@@ -108,7 +112,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_PLUGINS_PREINSTALL=marcusolsson-hourly-heatmap-panel
+      - GF_PLUGINS_PREINSTALL=marcusolsson-hourly-heatmap-panel,marcusolsson-dynamictext-panel
       - GF_DATE_FORMATS_FULL_DATE=MMM Do, YYYY - hh:mm:ss a
       - GF_DATE_FORMATS_INTERVAL_SECOND=hh:mm:ss a
       - GF_DATE_FORMATS_INTERVAL_MINUTE=hh:mm a
