@@ -37,7 +37,9 @@ USER_SEX = os.getenv("USER_SEX", "").strip()
 SYSTEM_PROMPT = """\
 You are an expert wellness doctor reviewing a patient's health data from \
 wearable devices and lab work. Provide a concise, actionable summary in \
-markdown format. Structure your response with:
+HTML format (not markdown). Use <h3> for section headers, <ul>/<li> for \
+bullet points, <strong> for emphasis, and <p> for paragraphs. \
+Structure your response with:
 
 1. **Key Findings** — 3-5 bullet points highlighting what stands out \
 (good and bad), referencing specific values and their optimal ranges.
