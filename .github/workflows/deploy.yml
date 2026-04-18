@@ -27,12 +27,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Run deploy script
-        # The runner is registered with its working directory INSIDE the
-        # repo checkout used by docker compose (see docs/auto-deploy.md).
-        # deploy.sh handles git fetch + fast-forward + build + health
-        # gate + rollback entirely on its own.
+        # No actions/checkout step by design: the deploy script operates
+        # on the stack's own repo clone (the one docker compose reads),
+        # not on a fresh runner-side checkout. HEALTH_GRAFANA_REPO_ROOT
+        # points at that clone; set it as a runner-level env var (via
+        # the .env file in the runner root) or override here.
         shell: bash
-        run: ./scripts/deploy.sh
+        run: bash "${HEALTH_GRAFANA_REPO_ROOT:-/home/beezy/workspace/health-grafana}/scripts/deploy.sh"
         env:
           DEPLOY_BRANCH: main
           HEALTH_TIMEOUT: "240"
