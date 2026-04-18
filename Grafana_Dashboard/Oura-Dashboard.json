@@ -58,14 +58,14 @@
       },
       "id": 200,
       "options": {
-        "content": "{{{summary}}}",
+        "content": "{{fix summary}}",
         "defaultContent": "<p><em>Waiting for AI summary. Set ANTHROPIC_API_KEY and wait for a fetch cycle.</em></p>",
         "editor": {
           "format": "auto",
           "language": "markdown"
         },
         "externalStyles": [],
-        "helpers": "",
+        "helpers": "handlebars.registerHelper(\"fix\",function(s){return new handlebars.SafeString((s||\"\").split(\"\\\\n\").join(\"\"));});",
         "renderMode": "everyRow",
         "status": "never",
         "styles": "",
