@@ -11,3 +11,6 @@ src/garmin_grafana.egg-info/top_level.txt
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Blood test data (personal health info)
+data/blood-tests/
