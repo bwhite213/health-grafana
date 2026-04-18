@@ -58,14 +58,14 @@
       },
       "id": 200,
       "options": {
-        "content": "{{{summary}}}",
+        "content": "{{#nl summary}}{{/nl}}",
         "defaultContent": "# AI Health Summary\n\n*Waiting for first summary generation. Set ANTHROPIC_API_KEY and wait for a fetch cycle.*",
         "editor": {
           "format": "auto",
           "language": "markdown"
         },
         "externalStyles": [],
-        "helpers": "",
+        "helpers": "handlebars.registerHelper('nl', function(str) {\n  if (!str) return '';\n  return new handlebars.SafeString(str.replace(/\\\\n/g, '\n'));\n});",
         "renderMode": "everyRow",
         "status": "never",
         "styles": "",
