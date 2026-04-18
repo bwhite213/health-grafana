@@ -8,8 +8,9 @@ Guidance for Claude Code (and any LLM assistant) working in this repository.
 into a local InfluxDB database and visualizes it in Grafana. Historically it
 was Garmin-only (a fork of
 [garmin-grafana](https://github.com/arpanghosh8453/garmin-grafana)); it has
-been extended to also ingest **Oura Ring** data and to produce a cross-source
-"unified" view with discrepancy detection.
+been extended to also ingest **Oura Ring** and **Apple Health / HealthKit**
+data and to produce a cross-source "unified" view with discrepancy
+detection.
 
 The goal is a single local dashboard showing every metric from every device
 the user owns, with the ability to:
@@ -19,8 +20,10 @@ the user owns, with the ability to:
 - compute an average/unified value across all available sources per day
 - flag discrepancies between sources (e.g., Garmin says 7h sleep, Oura says 6h)
 
-Apple Watch / HealthKit is **not yet** supported — the architecture leaves a
-clean extension point (see "Adding a new source" below).
+Apple Health is ingested one-shot from the iPhone's "Export All Health
+Data" zip — there's no live server-side HealthKit API. See
+`docs/apple-health-import.md`. Garmin and Oura are pulled continuously
+by the orchestrator's fetch loop.
 
 ## Stack
 
@@ -96,7 +99,15 @@ timeseries panel) via the annotation query defined in the dashboard JSON —
 log a tag like "sick" or "travel" in the Oura app and it shows up on the
 charts the moment the fetcher syncs.
 
-`Source` values currently used: `Garmin`, `Oura`. Future: `Apple`.
+`Source` values currently used: `Garmin`, `Oura`, `Apple`. Raw per-source
+measurements also include `AppleHealthActivity`, `AppleHealthSleep`,
+`AppleHealthHeartRate`, `AppleHealthVO2Max`, `AppleHealthWorkout` (written
+by the one-shot importer at `src/garmin_grafana/sources/apple_healthkit.py`
+— run via `python -m garmin_grafana.sources.apple_healthkit <export.zip>`;
+see `docs/apple-health-import.md`). Apple raw points are tagged with the
+per-device `sourceName` (e.g. `Device="Apple Watch"`) for audit; Unified*
+points get a single `Device=iOS` tag with values chosen by the importer's
+`--prefer-source` priority pick to avoid multi-device double-counting.
 
 Averaging across sources is done **at query time** in Grafana (`SELECT
 mean(...) FROM "UnifiedSleep" WHERE time > now() - 30d GROUP BY time(1d)`),

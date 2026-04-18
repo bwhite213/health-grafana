@@ -269,6 +269,83 @@ jobs:
           labels = [m[2] for m in d.COMPARED_METRICS]
           assert "vo2_max" in labels
 
+          # --- Apple side with sleep + activity + hr + vo2 + workout ---
+          apts = u.apple_to_unified(
+              date_str="2026-04-14",
+              device_name="iOS",
+              database_name="GarminStats",
+              sleep={
+                  "total_s": 25200, "deep_s": 3600, "light_s": 18000,
+                  "rem_s": 3600, "awake_s": 600, "efficiency": 97.7,
+                  "hrv_avg": 48.0,
+              },
+              activity={
+                  "steps": 8500, "calories_active": 420,
+                  "calories_total": 2100, "distance_m": 6200,
+                  "active_minutes": 55,
+              },
+              heart_rate={
+                  "rhr": 56, "hr_avg": 72, "hr_max": 135, "hr_min": 52,
+              },
+              vo2_max=51.8,
+              workouts=[{
+                  "start": "2026-04-14T10:00:00-07:00",
+                  "activity_type": "running",
+                  "duration_s": 1800, "calories": 320, "distance_m": 5000,
+                  "hr_avg": 155, "hr_max": 175,
+              }],
+          )
+          apple_emitted = {p["measurement"] for p in apts}
+          apple_required = {
+              "UnifiedSleep",
+              "UnifiedActivity",
+              "UnifiedHeartRate",
+              "UnifiedVO2Max",
+              "UnifiedWorkout",
+          }
+          missing_apple = apple_required - apple_emitted
+          assert not missing_apple, f"apple_to_unified missing: {missing_apple}"
+          apple_sources = {p["tags"]["Source"] for p in apts}
+          assert apple_sources == {"Apple"}, (
+              f"apple_to_unified must tag Source=Apple only, got {apple_sources}"
+          )
+
+          # --- Apple HealthKit importer: end-to-end parse + priority pick ---
+          import pathlib, tempfile
+          from garmin_grafana.sources import apple_healthkit
+
+          xml = """<?xml version="1.0" encoding="UTF-8"?>
+          <HealthData locale="en_US">
+            <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Apple Watch" unit="count" startDate="2026-04-14 10:00:00 -0700" endDate="2026-04-14 11:00:00 -0700" value="5000"/>
+            <Record type="HKQuantityTypeIdentifierStepCount" sourceName="iPhone" unit="count" startDate="2026-04-14 10:00:00 -0700" endDate="2026-04-14 11:00:00 -0700" value="4800"/>
+            <Record type="HKQuantityTypeIdentifierRestingHeartRate" sourceName="iPhone" unit="count/min" startDate="2026-04-14 00:00:00 -0700" endDate="2026-04-14 23:59:59 -0700" value="55"/>
+          </HealthData>
+          """
+          with tempfile.TemporaryDirectory() as tmp:
+              xml_path = pathlib.Path(tmp) / "export.xml"
+              xml_path.write_text(xml)
+              agg = apple_healthkit.parse_export(xml_path)
+              unified_pts, raw_pts = apple_healthkit.build_points(
+                  agg, device="iOS", database_name="GarminStats",
+                  preferred_source="Apple Watch",
+              )
+          # Priority pick: Apple Watch wins for activity on the contested day.
+          steps_pts = [p for p in unified_pts if p["measurement"] == "UnifiedActivity"]
+          assert len(steps_pts) == 1, f"expected 1 UnifiedActivity, got {steps_pts}"
+          assert steps_pts[0]["fields"]["steps"] == 5000, (
+              f"Apple Watch (5000) should beat iPhone (4800): {steps_pts[0]}"
+          )
+          # RHR fallback: pulled from iPhone because Watch didn't record it.
+          hr_pts = [p for p in unified_pts if p["measurement"] == "UnifiedHeartRate"]
+          assert hr_pts and hr_pts[0]["fields"].get("rhr") == 55, (
+              f"iPhone RHR fallback failed: {hr_pts}"
+          )
+          # Raw: per-source audit trail preserved.
+          raw_devices = sorted({p["tags"]["Device"] for p in raw_pts if p["measurement"] == "AppleHealthActivity"})
+          assert raw_devices == ["Apple Watch", "iPhone"], (
+              f"raw AppleHealthActivity should keep per-device rows: {raw_devices}"
+          )
+
           print("unified_schema smoke test passed")
           PY
 

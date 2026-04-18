@@ -106,7 +106,7 @@ def _query_influxdb(client, query: str) -> list[dict]:
             columns = series.get("columns", [])
             tags = series.get("tags", {})
             for values in series.get("values", []):
-                row = dict(zip(columns, values))
+                row = dict(zip(columns, values, strict=False))
                 row.update(tags)
                 rows.append(row)
         return rows

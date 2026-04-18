@@ -5,17 +5,20 @@
 # Health Grafana — Multi-Source Personal Health Dashboard
 
 A docker container stack that fetches data from multiple wearable sources
-(**Garmin** + **Oura Ring**, with Apple Watch / HealthKit planned), stores it
-in a local InfluxDB database, and visualizes everything in Grafana — both
+(**Garmin**, **Oura Ring**, **Apple Health / HealthKit**), stores it in a
+local InfluxDB database, and visualizes everything in Grafana — both
 per-source and as a unified cross-source view with discrepancy detection.
 
 > [!NOTE]
 > Originally a fork of
 > [garmin-grafana](https://github.com/arpanghosh8453/garmin-grafana). The
 > original Garmin fetch logic and dashboard are preserved unchanged; Oura
-> support and the Multi-Source Health dashboard have been layered on top.
-> See [`CLAUDE.md`](./CLAUDE.md) for the multi-source architecture overview,
-> [`docs/oura-setup.md`](./docs/oura-setup.md) for Oura onboarding, and
+> and Apple Health support and the Multi-Source Health dashboard have been
+> layered on top. See [`CLAUDE.md`](./CLAUDE.md) for the multi-source
+> architecture overview, [`docs/oura-setup.md`](./docs/oura-setup.md) for
+> Oura onboarding,
+> [`docs/apple-health-import.md`](./docs/apple-health-import.md) for the
+> iPhone export flow, and
 > [`docs/ubuntu-deployment.md`](./docs/ubuntu-deployment.md) for a local
 > Ubuntu server install.
 

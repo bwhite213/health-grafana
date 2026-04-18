@@ -36,10 +36,11 @@ cd "$REPO_ROOT"
 
 SERVICES=(health-fetch-data influxdb grafana)
 
-# Refuse to run against a dirty tree — a `git reset --hard` on rollback
-# would silently wipe the user's uncommitted edits.
-if [[ -n "$(git status --porcelain)" ]]; then
-  die "working tree is dirty; commit or stash before deploying"
+# Refuse to run if tracked files have uncommitted edits — a
+# `git reset --hard` on rollback would silently wipe them. Untracked
+# files are fine (git reset --hard preserves them).
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+  die "working tree has uncommitted changes to tracked files; commit or stash before deploying"
 fi
 
 # Capture whatever ref we're on so we can put the clone back where we

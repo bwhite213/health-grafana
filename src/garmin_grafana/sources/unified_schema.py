@@ -41,6 +41,7 @@ M_STRESS = "UnifiedStress"
 
 SOURCE_GARMIN = "Garmin"
 SOURCE_OURA = "Oura"
+SOURCE_APPLE = "Apple"
 
 
 def _base_tags(source: str, device: str, database_name: str) -> dict[str, str]:
@@ -734,5 +735,124 @@ def oura_to_unified(
                 recovery_high_s=daily_stress.get("recovery_high"),
             ),
         )
+
+    return points
+
+
+def apple_to_unified(
+    *,
+    date_str: str,
+    device_name: str,
+    database_name: str,
+    sleep: dict | None = None,
+    activity: dict | None = None,
+    heart_rate: dict | None = None,
+    vo2_max: float | None = None,
+    workouts: list | None = None,
+) -> list[dict[str, Any]]:
+    """Build Unified* points from the per-day aggregates produced by
+    ``sources.apple_healthkit`` after it streams the iPhone ``export.xml``.
+
+    Unlike Garmin/Oura (which receive full native response dicts from each
+    endpoint), Apple's export is a flat stream of `<Record>` elements. The
+    importer is responsible for grouping records by local day and sensor
+    type before calling this normalizer — so the inputs here are
+    already-rolled-up daily summaries.
+
+    Expected shape of each arg (all keys optional):
+
+    - ``sleep``: ``{"total_s", "deep_s", "light_s", "rem_s", "awake_s",
+      "hrv_avg", "efficiency"}`` (Apple has no sleep score equivalent)
+    - ``activity``: ``{"steps", "calories_active", "calories_total",
+      "distance_m", "active_minutes"}``
+    - ``heart_rate``: ``{"rhr", "hr_avg", "hr_max", "hr_min"}``
+    - ``vo2_max``: single float (ml/kg/min)
+    - ``workouts``: list of ``{"activity_type", "start", "duration_s",
+      "calories", "distance_m", "hr_avg", "hr_max"}`` dicts
+
+    Apple intentionally has no ``daily_readiness`` or ``daily_stress``
+    equivalent — skip those rather than synthesize values.
+    """
+    points: list[dict[str, Any]] = []
+    tag_base = {"source": SOURCE_APPLE, "device": device_name, "database_name": database_name}
+
+    # Apple timestamps land at noon UTC on the local day, matching the Oura
+    # convention — this keeps cross-source overlays aligned on the same day
+    # bucket regardless of timezone.
+    day_ts = f"{date_str}T12:00:00+00:00"
+
+    if sleep:
+        _append_if_present(
+            points,
+            unified_sleep_point(
+                **tag_base,
+                time=day_ts,
+                duration_s=sleep.get("total_s"),
+                deep_s=sleep.get("deep_s"),
+                light_s=sleep.get("light_s"),
+                rem_s=sleep.get("rem_s"),
+                awake_s=sleep.get("awake_s"),
+                hrv_avg=sleep.get("hrv_avg"),
+                efficiency=sleep.get("efficiency"),
+            ),
+        )
+
+    if activity:
+        _append_if_present(
+            points,
+            unified_activity_point(
+                **tag_base,
+                time=day_ts,
+                steps=activity.get("steps"),
+                calories_active=activity.get("calories_active"),
+                calories_total=activity.get("calories_total"),
+                distance_m=activity.get("distance_m"),
+                active_minutes=activity.get("active_minutes"),
+            ),
+        )
+
+    if heart_rate:
+        _append_if_present(
+            points,
+            unified_heart_rate_point(
+                **tag_base,
+                time=day_ts,
+                rhr=heart_rate.get("rhr"),
+                hr_avg=heart_rate.get("hr_avg"),
+                hr_max=heart_rate.get("hr_max"),
+                hr_min=heart_rate.get("hr_min"),
+            ),
+        )
+
+    if vo2_max is not None:
+        _append_if_present(
+            points,
+            unified_vo2_max_point(
+                **tag_base,
+                time=f"{date_str}T00:00:00+00:00",
+                vo2_max=float(vo2_max),
+            ),
+        )
+
+    if workouts:
+        for w in workouts:
+            if not isinstance(w, dict):
+                continue
+            start = w.get("start")
+            if not start:
+                continue
+            _append_if_present(
+                points,
+                unified_workout_point(
+                    **tag_base,
+                    time=start,
+                    activity_type=w.get("activity_type"),
+                    duration_s=w.get("duration_s"),
+                    calories=w.get("calories"),
+                    distance_m=w.get("distance_m"),
+                    hr_avg=w.get("hr_avg"),
+                    hr_max=w.get("hr_max"),
+                ),
+            )
 
     return points
