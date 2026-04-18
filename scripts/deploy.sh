@@ -36,25 +36,40 @@ cd "$REPO_ROOT"
 
 SERVICES=(health-fetch-data influxdb grafana)
 
-rollback_sha="$(git rev-parse HEAD)"
-log "current sha: $rollback_sha"
+# Refuse to run against a dirty tree — a `git reset --hard` on rollback
+# would silently wipe the user's uncommitted edits.
+if [[ -n "$(git status --porcelain)" ]]; then
+  die "working tree is dirty; commit or stash before deploying"
+fi
 
-log "fetching origin..."
+# Capture whatever ref we're on so we can put the clone back where we
+# found it regardless of deploy outcome. `symbolic-ref` gives a branch
+# name (e.g. `main`); on a detached HEAD it fails and we fall back to
+# the raw SHA.
+original_ref="$(git symbolic-ref --short -q HEAD || git rev-parse HEAD)"
+rollback_sha="$(git rev-parse HEAD)"
+log "starting from ref: $original_ref (sha: $rollback_sha)"
+
+log "fetching origin/$DEPLOY_BRANCH..."
 git fetch origin "$DEPLOY_BRANCH"
 target_sha="$(git rev-parse "origin/$DEPLOY_BRANCH")"
 
+# Switch to the deploy branch, forcing it to track origin exactly.
+# `-B` creates it if missing and resets it to the given commit if it
+# exists. Safe because we just verified the tree is clean.
+log "checking out $DEPLOY_BRANCH at $target_sha..."
+git checkout -B "$DEPLOY_BRANCH" "$target_sha"
+
 if [[ "$rollback_sha" == "$target_sha" ]]; then
   log "already at origin/$DEPLOY_BRANCH ($target_sha) — nothing to deploy"
+  # Put the clone back on whatever branch the operator was using.
+  if [[ "$original_ref" != "$DEPLOY_BRANCH" ]]; then
+    git checkout "$original_ref"
+  fi
   exit 0
 fi
 
 log "deploying $rollback_sha -> $target_sha"
-
-# Fast-forward only; if the branch has diverged, bail loudly rather than
-# silently clobbering local state.
-if ! git merge --ff-only "$target_sha"; then
-  die "cannot fast-forward to $target_sha — branch has diverged; resolve manually"
-fi
 
 wait_for_healthy() {
   local deadline=$(( $(date +%s) + HEALTH_TIMEOUT ))
@@ -83,7 +98,10 @@ wait_for_healthy() {
 }
 
 rollback() {
-  log "ROLLBACK: reverting to $rollback_sha"
+  log "ROLLBACK: reverting $DEPLOY_BRANCH to $rollback_sha"
+  # We're currently on $DEPLOY_BRANCH (switched above). Reset it back
+  # to the pre-deploy SHA so the next `docker compose up --build` picks
+  # up the known-good tree.
   if ! git reset --hard "$rollback_sha"; then
     die "git reset --hard $rollback_sha failed"
   fi
@@ -112,6 +130,14 @@ fi
 
 trap - ERR
 log "deploy OK — $target_sha is live"
+
+# Leave the clone on the deploy branch. The operator's pre-deploy ref
+# was saved as $original_ref; if it differs from the deploy branch,
+# we flag it so they can switch back manually (auto-switching would
+# risk silently moving the stack's runtime checkout off main).
+if [[ "$original_ref" != "$DEPLOY_BRANCH" ]]; then
+  log "note: pre-deploy ref was '$original_ref'; leaving clone on '$DEPLOY_BRANCH' for stack runtime"
+fi
 
 # Prune old images that no longer have a tag so the disk doesn't fill up
 # after many rebuilds. Keeps any image in use by a running container.

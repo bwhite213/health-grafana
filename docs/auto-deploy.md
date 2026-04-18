@@ -108,20 +108,48 @@ The orchestrator fires three ping types:
 
 ## 3. Operational notes
 
+### Feature-branch workflow
+
+The server checkout at `/home/beezy/workspace/health-grafana` doubles
+as the runtime checkout for docker compose. Because squash-merges on
+PRs rewrite commit SHAs, deploys from a feature-branch-checked-out
+clone would fail a simple fast-forward. `deploy.sh` handles this by:
+
+- refusing to run against a dirty working tree (protects uncommitted
+  feature-branch edits from getting wiped by a rollback's
+  `git reset --hard`)
+- explicitly `checkout -B main origin/main` before building, so the
+  runtime is always anchored to main regardless of what branch an
+  operator left the clone on
+
+Practical consequence: **do your dev work on a separate clone or a
+`git worktree`**, not on the server's runtime checkout. Example:
+
+```bash
+# One-time: create a dev worktree next to the runtime clone.
+cd /home/beezy/workspace/health-grafana
+git worktree add ../health-grafana-dev -b my-feature
+# Now /home/beezy/workspace/health-grafana-dev has its own branch
+# checkout, and the runtime clone stays on main.
+```
+
+The deploy script will log a note if it finds the runtime clone on a
+branch other than `main` when it starts.
+
 ### Rollback behaviour
 
 `scripts/deploy.sh`:
 
-1. Records the current HEAD as the rollback SHA.
-2. Fast-forwards to `origin/main` (aborts if the branch diverged —
-   never clobbers local state).
-3. `docker compose up -d --build`.
-4. Polls `docker inspect` for up to `HEALTH_TIMEOUT` seconds (default
+1. Verifies the working tree is clean.
+2. Records the current HEAD (branch or SHA) as the rollback ref.
+3. `git fetch origin main` + `git checkout -B main origin/main`.
+4. `docker compose up -d --build`.
+5. Polls `docker inspect` for up to `HEALTH_TIMEOUT` seconds (default
    240s in CI, 180s locally) waiting for every service with a
    healthcheck to report `healthy` and every service without one to
    report `running`.
-5. On timeout or any earlier failure: `git reset --hard` back to the
-   rollback SHA and rebuild.
+6. On timeout or any earlier failure: `git reset --hard` back to the
+   rollback SHA on main and rebuild.
 
 Exit codes tell you what happened:
 
