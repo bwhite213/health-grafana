@@ -55,11 +55,10 @@ services:
       #####################################################################################
       # - LOG_LEVEL=INFO # change to DEBUG to get DEBUG logs
       # - UPDATE_INTERVAL_SECONDS=300 # Default update check interval is set to 5 minutes
-      # Recommended FETCH_SELECTION for the multi-source dashboard — drop `lifestyle`
-      # (noisy NoneType warning if you don't use Lifestyle Journaling), add
-      # training_readiness (best Garmin analogue to Oura Readiness — makes the
-      # UnifiedReadiness discrepancy meaningful) and training_status (for load tracking).
-      # - FETCH_SELECTION=daily_avg,sleep,steps,heartrate,stress,breathing,hrv,fitness_age,vo2,activity,race_prediction,body_composition,training_readiness,training_status
+      # Recommended FETCH_SELECTION — includes all metrics for the Multi-Source
+      # Health and Cardio Health dashboards. Drops `lifestyle` (noisy NoneType
+      # warning if unused), adds cardio-relevant metrics.
+      # - FETCH_SELECTION=daily_avg,sleep,steps,heartrate,stress,breathing,hrv,fitness_age,vo2,activity,race_prediction,body_composition,training_readiness,training_status,lactate_threshold,blood_pressure,hill_score,endurance_score
       # - KEEP_FIT_FILES=False # Stores the FIT files (downloads and saves them) when set to True - read docs for more details
       # - ALWAYS_PROCESS_FIT_FILES=False # Enables processing FIT files even if GPS data is not present in it when set to True, default False
       # - USER_TIMEZONE= # Can hardcode user's timezone - must be a valid TZ identifier like Europe/Budapest without quotes, fetches timezone automatically and dynamically on each run if set to empty (default) - Read docs

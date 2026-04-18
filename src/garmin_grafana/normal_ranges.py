@@ -170,6 +170,31 @@ _VO2_MAX_BRACKETS: list[tuple[str, int, int, dict[str, float | None]]] = [
 ]
 
 
+# Blood pressure (AHA 2017 guidelines, age-independent).
+# Source: American Heart Association / American College of Cardiology 2017:
+#   Normal: <120/<80, Elevated: 120-129/<80,
+#   Stage 1 HTN: 130-139/80-89, Stage 2 HTN: ≥140/≥90.
+# These are "lower is better" metrics — green zone is at the bottom.
+_BP_SYSTOLIC_CONSTANT: dict[str, float | None] = {
+    "normal_max": 120, "borderline_max": 140,
+    "lower_is_better": True,
+}
+_BP_DIASTOLIC_CONSTANT: dict[str, float | None] = {
+    "normal_max": 80, "borderline_max": 90,
+    "lower_is_better": True,
+}
+
+# Acute:Chronic Workload Ratio — sport science consensus.
+# Source: Gabbett 2016, Hulin et al. 2014 (BJSM):
+#   0.8-1.3 = "sweet spot" (progressive overload with low injury risk)
+#   0.6-0.8 / 1.3-1.5 = borderline (under/overreaching)
+#   <0.6 = detraining, >1.5 = high injury risk
+_ACWR_CONSTANT: dict[str, float | None] = {
+    "normal_min": 0.8, "normal_max": 1.3,
+    "borderline_min": 0.6, "borderline_max": 1.5,
+}
+
+
 def _lookup_age_sex(profile: Profile, table: list) -> dict | None:
     for sex, lo, hi, ranges in table:
         if sex == profile.sex and lo <= profile.age <= hi:
@@ -212,6 +237,10 @@ def resolve(profile: Profile) -> dict[str, dict]:
     if vo2 is not None:
         out["vo2_max"] = vo2
 
+    out["systolic_bp"] = _BP_SYSTOLIC_CONSTANT
+    out["diastolic_bp"] = _BP_DIASTOLIC_CONSTANT
+    out["acwr"] = _ACWR_CONSTANT
+
     return out
 
 
@@ -224,18 +253,31 @@ def build_threshold_steps(ranges: dict) -> list[dict]:
     """
     Turn a range dict into a Grafana `thresholds.steps` list with colors.
 
-    The first step always has ``value: None`` (everything below the first
-    real threshold). Subsequent steps mark boundary crossings:
+    For standard metrics (higher-in-range = good):
       red (below) -> yellow -> green -> yellow -> red (above)
+
+    For ``lower_is_better`` metrics (like blood pressure):
+      green (below) -> yellow -> red (above)
+
     Any of those transitions are skipped when the corresponding bound is
     ``None`` or equal to its neighbor.
     """
+    if ranges.get("lower_is_better"):
+        normal_max = ranges.get("normal_max")
+        borderline_max = ranges.get("borderline_max")
+        steps: list[dict] = [{"color": "green", "value": None}]
+        if normal_max is not None:
+            steps.append({"color": "yellow", "value": normal_max})
+        if borderline_max is not None and borderline_max != normal_max:
+            steps.append({"color": "red", "value": borderline_max})
+        return steps
+
     normal_min = ranges.get("normal_min")
     normal_max = ranges.get("normal_max")
     borderline_min = ranges.get("borderline_min")
     borderline_max = ranges.get("borderline_max")
 
-    steps: list[dict] = [{"color": "red", "value": None}]
+    steps = [{"color": "red", "value": None}]
     if borderline_min is not None and borderline_min != normal_min:
         steps.append({"color": "yellow", "value": borderline_min})
     if normal_min is not None:
