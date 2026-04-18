@@ -25,12 +25,24 @@ Data" zip — there's no live server-side HealthKit API. See
 `docs/apple-health-import.md`. Garmin and Oura are pulled continuously
 by the orchestrator's fetch loop.
 
+An **optional Home Assistant** service (container `homeassistant`)
+provides the near-live alternative: the iOS Companion app streams
+HealthKit sensors to HA, which forwards them to a separate
+`home_assistant` InfluxDB database on the same InfluxDB instance.
+Grafana has a second datasource (`HomeAssistant-InfluxDB`) pre-wired
+to that database. See `docs/home-assistant-setup.md`. HA data does
+**not** feed the `Unified*` measurements today — it's a parallel
+stream with its own schema.
+
 ## Stack
 
 - **Language**: Python 3.13, managed with `uv`
-- **Storage**: InfluxDB (v1 recommended; v3 supported)
-- **Visualization**: Grafana with auto-provisioned datasource and dashboards
-- **Runtime**: Docker Compose (3 services: fetcher, influxdb, grafana)
+- **Storage**: InfluxDB (v1 recommended; v3 supported) — one instance,
+  two databases: `GarminStats` (Garmin/Oura/Apple-import) and
+  `home_assistant` (HA-streamed live sensors, created on first HA setup).
+- **Visualization**: Grafana with two auto-provisioned datasources (one per DB) and dashboards
+- **Runtime**: Docker Compose (3 services always + optional `homeassistant`:
+  fetcher, influxdb, grafana, homeassistant)
 
 ## Repository layout
 

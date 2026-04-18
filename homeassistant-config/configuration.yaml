@@ -1,0 +1,57 @@
+# Home Assistant configuration for health-grafana
+#
+# Minimal seed config: just enough to bring HA up with InfluxDB forwarding
+# wired in. Everything else (integrations, automations, users) is added
+# interactively via the UI wizard on first boot — the resulting state
+# lives under .storage/ and is deliberately gitignored.
+#
+# Why this file is committed: the InfluxDB connection is infrastructure
+# we want reproducible, not something to configure by hand on every
+# fresh clone. Storing it as code also means deploys are safe to wipe
+# the state directory — reseeding the admin account is the only manual
+# step.
+#
+# See docs/home-assistant-setup.md for the first-boot walkthrough.
+
+# HA's `default_config:` bundle pulls in the baseline integrations
+# (frontend, history, mobile_app for the iOS Companion, auth, etc.).
+default_config:
+
+# Forward every state change HA knows about to the shared InfluxDB
+# instance at ``influxdb:8086`` under the ``home_assistant`` database.
+# Auth is off on that InfluxDB (see compose-example.yml), so no
+# credentials here. Once the database exists, this integration writes
+# continuously — expect one measurement per entity_id.
+influxdb:
+  api_version: 1
+  host: influxdb
+  port: 8086
+  database: home_assistant
+  max_retries: 3
+  default_measurement: state
+  # Keep the write volume focused. Exclude chatty entities that don't
+  # feed any dashboard we care about yet; add more as they appear.
+  exclude:
+    domains:
+      - automation
+      - script
+      - scene
+      - zone
+      - persistent_notification
+      - updater
+    entity_globs:
+      - sensor.time*
+      - sensor.date*
+
+# HTTP: use defaults (port 8123 on all interfaces inside the
+# container; docker-compose's port-publish scopes host-side
+# exposure). A custom `http:` block that partially sets proxy
+# settings invalidates the entire integration and drops HA into
+# recovery mode — leave it out unless you need a reverse-proxy setup.
+
+# Logging: keep it calm. Raise to debug temporarily when
+# troubleshooting a specific integration.
+logger:
+  default: info
+  logs:
+    homeassistant.components.influxdb: warning

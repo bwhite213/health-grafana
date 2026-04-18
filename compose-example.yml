@@ -128,6 +128,31 @@ services:
       - '3000:3000'
     image: 'grafana/grafana:latest'
 
+  # Home Assistant — optional. Enables the near-live Apple HealthKit
+  # path (via the iOS Companion app) and the extension point for
+  # bedroom environment sensors, Tesla data, etc. Bridge networking
+  # reaches `influxdb` by service name; switch to `network_mode: host`
+  # later when adding a Zigbee/Matter USB radio. See
+  # docs/home-assistant-setup.md for first-boot + iOS pairing.
+  homeassistant:
+    restart: unless-stopped
+    container_name: homeassistant
+    hostname: homeassistant
+    image: 'ghcr.io/home-assistant/home-assistant:stable'
+    depends_on:
+      - influxdb
+    volumes:
+      - ./homeassistant-config:/config
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - '8123:8123'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sfo /dev/null http://localhost:8123/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+
 volumes:
   influxdb_data:
   grafana_data:

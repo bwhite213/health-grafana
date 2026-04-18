@@ -14,11 +14,15 @@ per-source and as a unified cross-source view with discrepancy detection.
 > [garmin-grafana](https://github.com/arpanghosh8453/garmin-grafana). The
 > original Garmin fetch logic and dashboard are preserved unchanged; Oura
 > and Apple Health support and the Multi-Source Health dashboard have been
-> layered on top. See [`CLAUDE.md`](./CLAUDE.md) for the multi-source
-> architecture overview, [`docs/oura-setup.md`](./docs/oura-setup.md) for
-> Oura onboarding,
+> layered on top. An optional Home Assistant service provides the
+> near-live Apple HealthKit path and the extension point for
+> environment sensors / home automation. See
+> [`CLAUDE.md`](./CLAUDE.md) for the multi-source architecture overview,
+> [`docs/oura-setup.md`](./docs/oura-setup.md) for Oura onboarding,
 > [`docs/apple-health-import.md`](./docs/apple-health-import.md) for the
-> iPhone export flow, and
+> manual iPhone export flow,
+> [`docs/home-assistant-setup.md`](./docs/home-assistant-setup.md) for
+> the live Home Assistant + iOS Companion path, and
 > [`docs/ubuntu-deployment.md`](./docs/ubuntu-deployment.md) for a local
 > Ubuntu server install.
 

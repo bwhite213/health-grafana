@@ -34,7 +34,7 @@ cd "$REPO_ROOT"
 
 [[ -f "$COMPOSE_FILE" ]] || die "compose file '$COMPOSE_FILE' not found in $REPO_ROOT"
 
-SERVICES=(health-fetch-data influxdb grafana)
+SERVICES=(health-fetch-data influxdb grafana homeassistant)
 
 # Refuse to run if tracked files have uncommitted edits — a
 # `git reset --hard` on rollback would silently wipe them. Untracked

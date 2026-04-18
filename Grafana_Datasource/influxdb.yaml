@@ -13,3 +13,21 @@ datasources:
       password: influxdb_secret_password
     jsonData:
       httpMode: GET
+
+  # Home Assistant state stream — same InfluxDB instance, separate
+  # database. Write volume on this DB is ~100× the health stream
+  # (every light, motion, phone sensor update) so retention is managed
+  # independently. Cross-DB panels use Grafana's "Mixed" datasource.
+  - name: HomeAssistant-InfluxDB
+    uid: homeassistant_influxdb
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    user: influxdb_user
+    database: home_assistant
+    isDefault: false
+    editable: true
+    secureJsonData:
+      password: influxdb_secret_password
+    jsonData:
+      httpMode: GET

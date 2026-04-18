@@ -24,3 +24,26 @@ docker-compose.yml
 
 # Claude Code local session state (hooks, slash commands, etc.)
 .claude/
+
+# Home Assistant runtime state. Commit only `configuration.yaml` (and
+# any other deliberately-tracked config files). Everything else HA
+# creates at runtime — SQLite history DB, auth store, logs, secrets,
+# UI-created automations — stays local and gets recreated on first
+# boot or migrated via docs/home-assistant-setup.md.
+homeassistant-config/.storage/
+homeassistant-config/.cloud/
+homeassistant-config/.HA_VERSION
+homeassistant-config/home-assistant*.log*
+homeassistant-config/home-assistant_v2.db*
+homeassistant-config/*.db-shm
+homeassistant-config/*.db-wal
+homeassistant-config/secrets.yaml
+homeassistant-config/known_devices.yaml
+homeassistant-config/tts/
+homeassistant-config/deps/
+homeassistant-config/custom_components/
+homeassistant-config/www/
+homeassistant-config/blueprints/
+homeassistant-config/image/
+homeassistant-config/media/
+homeassistant-config/.ha_run.lock
