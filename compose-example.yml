@@ -69,6 +69,12 @@ services:
     restart: unless-stopped
     container_name: influxdb
     hostname: influxdb
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8086/ping || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - INFLUXDB_DB=GarminStats
       - INFLUXDB_USER=influxdb_user
@@ -93,6 +99,12 @@ services:
     restart: unless-stopped
     container_name: grafana
     hostname: grafana
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin

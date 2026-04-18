@@ -1,0 +1,38 @@
+name: Deploy
+
+# Fires after the `CI` workflow finishes on main. If CI failed, the
+# `if:` guard below skips the deploy — so a broken push never rolls out.
+# The self-hosted runner on the home server polls GitHub; no inbound
+# ports are required on the server.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Rebuild and restart stack
+    # Only deploy on a successful CI run (or a manual workflow_dispatch).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, health-grafana-server]
+    timeout-minutes: 15
+    steps:
+      - name: Run deploy script
+        # The runner is registered with its working directory INSIDE the
+        # repo checkout used by docker compose (see docs/auto-deploy.md).
+        # deploy.sh handles git fetch + fast-forward + build + health
+        # gate + rollback entirely on its own.
+        shell: bash
+        run: ./scripts/deploy.sh
+        env:
+          DEPLOY_BRANCH: main
+          HEALTH_TIMEOUT: "240"

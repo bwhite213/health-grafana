@@ -14,3 +14,10 @@ __pycache__/
 
 # Blood test data (personal health info)
 data/blood-tests/
+
+# Self-hosted GitHub Actions runner (installed by user; contains credentials
+# and ~200MB of binaries). See docs/auto-deploy.md.
+actions-runner/
+
+# Local docker-compose override (tracked template is compose-example.yml)
+docker-compose.yml

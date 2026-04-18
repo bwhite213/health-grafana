@@ -28,4 +28,13 @@ COPY --chown=appuser:appuser src /app/
 
 USER appuser
 
+# Fail the healthcheck if the orchestrator hasn't touched its heartbeat file
+# in the last 30 min. The loop writes /tmp/fetcher_heartbeat at the end of
+# every cycle (see orchestrator.main). start-period covers cold boot,
+# initial Garmin login, and first full fetch.
+HEALTHCHECK --interval=60s --timeout=10s --start-period=300s --retries=3 \
+  CMD test -f /tmp/fetcher_heartbeat \
+   && test $(( $(date +%s) - $(stat -c %Y /tmp/fetcher_heartbeat) )) -lt 1800 \
+   || exit 1
+
 CMD ["python", "-m", "garmin_grafana.orchestrator"]

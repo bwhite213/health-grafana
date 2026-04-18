@@ -20,7 +20,10 @@ from __future__ import annotations
 import logging
 import os
 import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytz
 
@@ -41,6 +44,40 @@ OURA_ENABLED = os.getenv("OURA_ENABLED", "True" if OURA_TOKEN else "False").lowe
     "y",
 )
 DISCREPANCY_LOOKBACK_DAYS = int(os.getenv("DISCREPANCY_LOOKBACK_DAYS", "7"))
+
+# Dead-man's switch. Set to a healthchecks.io check URL (or compatible).
+# Orchestrator hits "${URL}/start" at cycle begin, the bare URL at cycle end,
+# and "${URL}/fail" on unhandled exceptions. If no ping arrives within the
+# check's grace window, healthchecks.io notifies the configured channels.
+HEALTHCHECK_PING_URL = os.getenv("HEALTHCHECK_PING_URL", "").strip().rstrip("/")
+
+# Docker HEALTHCHECK (see Dockerfile) reads this file's mtime to decide
+# whether the loop is alive. Touching it is the in-container equivalent of
+# the external healthchecks.io ping.
+HEARTBEAT_FILE = Path(os.getenv("FETCHER_HEARTBEAT_FILE", "/tmp/fetcher_heartbeat"))
+
+
+def _touch_heartbeat() -> None:
+    try:
+        HEARTBEAT_FILE.touch()
+    except OSError as err:  # noqa: BLE001
+        _log.warning("Failed to update heartbeat file %s: %s", HEARTBEAT_FILE, err)
+
+
+def _ping_healthcheck(suffix: str = "") -> None:
+    """Fire a best-effort HTTP GET at the configured dead-man's switch URL.
+
+    suffix: "", "/start", or "/fail" (healthchecks.io convention). Silent
+    on failure — a transient network blip must not break the fetch loop.
+    """
+    if not HEALTHCHECK_PING_URL:
+        return
+    url = f"{HEALTHCHECK_PING_URL}{suffix}"
+    try:
+        with urllib.request.urlopen(url, timeout=10):
+            pass
+    except (urllib.error.URLError, TimeoutError, OSError) as err:
+        _log.debug("Healthcheck ping to %s failed: %s", url, err)
 
 
 def _build_oura_client() -> oura_fetch.OuraClient | None:
@@ -174,9 +211,16 @@ def main() -> None:
         local_timediff = timedelta(hours=0)
 
     while True:
-        last_watch_sync_time_UTC = datetime.fromtimestamp(
-            int(garmin_fetch.garmin_obj.get_device_last_used().get("lastUsedDeviceUploadTime") / 1000)
-        ).astimezone(pytz.utc)
+        _ping_healthcheck("/start")
+        try:
+            last_watch_sync_time_UTC = datetime.fromtimestamp(
+                int(garmin_fetch.garmin_obj.get_device_last_used().get("lastUsedDeviceUploadTime") / 1000)
+            ).astimezone(pytz.utc)
+        except Exception as err:  # noqa: BLE001
+            _log.error("Failed to read last device sync time: %s", err)
+            _ping_healthcheck("/fail")
+            time.sleep(garmin_fetch.UPDATE_INTERVAL_SECONDS)
+            continue
 
         if last_influxdb_sync_time_UTC < last_watch_sync_time_UTC:
             _log.info("Update found : watch sync time is %s UTC", last_watch_sync_time_UTC)
@@ -203,6 +247,8 @@ def main() -> None:
                 _oura_fetch_range(oura_client, yday_local, today_local)
                 _run_discrepancy_pass()
 
+        _touch_heartbeat()
+        _ping_healthcheck()
         _log.info(
             "Waiting for %s seconds before next automatic update",
             garmin_fetch.UPDATE_INTERVAL_SECONDS,
