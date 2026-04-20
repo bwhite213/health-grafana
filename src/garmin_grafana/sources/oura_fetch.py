@@ -191,10 +191,17 @@ def build_raw_oura_points(
     day_ts = f"{date_str}T12:00:00+00:00"
 
     if sleep_detail:
+        # Field names mirror the Oura API verbatim so audit queries map 1:1
+        # to what the app shows:
+        #   "Time Asleep"     -> total_sleep_duration
+        #   "Total duration"  -> time_in_bed
+        #   "Awake"           -> awake_time
+        #   "Deep/Light/REM"  -> *_sleep_duration
         fields = {
             k: sleep_detail.get(k)
             for k in (
                 "total_sleep_duration",
+                "time_in_bed",
                 "deep_sleep_duration",
                 "light_sleep_duration",
                 "rem_sleep_duration",
@@ -212,10 +219,17 @@ def build_raw_oura_points(
         if daily_sleep and daily_sleep.get("score") is not None:
             fields["sleep_score"] = daily_sleep["score"]
         if fields:
+            # Stamp at noon UTC of Oura's `day` (the wake-up calendar day the
+            # app attributes the sleep to) rather than bedtime_end. Grafana's
+            # GROUP BY time(1d) buckets in UTC, so a point stamped at a local
+            # wake-up time near midnight can land in the wrong day bucket for
+            # users outside UTC. Noon-UTC keeps the point in the same calendar
+            # day as the Oura app regardless of the user's timezone, matching
+            # the convention already used for daily_activity/readiness/spo2.
             out.append(
                 {
                     "measurement": "OuraSleep",
-                    "time": _iso(sleep_detail.get("bedtime_end"), day_ts),
+                    "time": day_ts,
                     "tags": tags,
                     "fields": fields,
                 }

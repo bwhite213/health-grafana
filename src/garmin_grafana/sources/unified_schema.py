@@ -434,13 +434,18 @@ def garmin_to_unified(
             ),
         )
 
+        # Garmin's DailyStats has no true daily-average HR field —
+        # `minAvgHeartRate` is the *minimum* of the day's rolling 2-min
+        # averages (close to RHR), not an average, so publishing it as
+        # `hr_avg` understates the real average by 20-30 bpm. Leave
+        # hr_avg unset; consumers that need an average should compute it
+        # at query time from HeartRateIntraday.
         _append_if_present(
             points,
             unified_heart_rate_point(
                 **tag_base,
                 time=start,
                 rhr=daily_stats.get("restingHeartRate"),
-                hr_avg=daily_stats.get("minAvgHeartRate"),  # Garmin's closest "avg"
                 hr_max=daily_stats.get("maxHeartRate"),
                 hr_min=daily_stats.get("minHeartRate"),
             ),
@@ -588,14 +593,23 @@ def oura_to_unified(
 
     # --- Sleep ---
     if sleep_detail:
-        bedtime_end = sleep_detail.get("bedtime_end") or sleep_detail.get("day")
+        # Stamp at noon UTC of Oura's `day` (the wake-up calendar day) so the
+        # point lands in the same UTC-day bucket Grafana uses for GROUP BY
+        # time(1d), independent of the user's timezone. bedtime_end is a
+        # local-time ISO string, which can drift a bucket off for non-UTC
+        # users. Matches the convention used for daily_activity/readiness.
+        sleep_day = sleep_detail.get("day") or date_str
+        sleep_time = f"{sleep_day}T12:00:00+00:00"
         total = sleep_detail.get("total_sleep_duration")
         deep = sleep_detail.get("deep_sleep_duration")
         light = sleep_detail.get("light_sleep_duration")
         rem = sleep_detail.get("rem_sleep_duration")
         awake = sleep_detail.get("awake_time")
         hrv = sleep_detail.get("average_hrv")
-        rhr = sleep_detail.get("average_heart_rate") or sleep_detail.get("lowest_heart_rate")
+        # Oura's "Resting heart rate" in the app is the lowest sleeping HR,
+        # not the average. Prefer lowest_heart_rate so the unified RHR
+        # matches the number the user sees in the Oura app.
+        rhr = sleep_detail.get("lowest_heart_rate") or sleep_detail.get("average_heart_rate")
         efficiency = sleep_detail.get("efficiency")
         score = None
         if daily_sleep:
@@ -616,7 +630,7 @@ def oura_to_unified(
             points,
             unified_sleep_point(
                 **tag_base,
-                time=bedtime_end or f"{date_str}T12:00:00+00:00",
+                time=sleep_time,
                 duration_s=total,
                 deep_s=deep,
                 light_s=light,
@@ -635,7 +649,7 @@ def oura_to_unified(
             points,
             unified_heart_rate_point(
                 **tag_base,
-                time=bedtime_end or f"{date_str}T12:00:00+00:00",
+                time=sleep_time,
                 rhr=sleep_detail.get("lowest_heart_rate"),
                 hr_avg=sleep_detail.get("average_heart_rate"),
                 hr_max=None,
