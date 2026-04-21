@@ -46,8 +46,11 @@ services:
       #   USER_WEIGHT_KG   integer kg (reserved; currently unused)
       #
       # AI-powered health summary (optional — skipped if key is missing):
-      #   ANTHROPIC_API_KEY   API key from console.anthropic.com
-      #   HEALTH_SUMMARY_MODEL  model to use (default: claude-haiku-4-5-20251001)
+      #   ANTHROPIC_API_KEY            API key from console.anthropic.com
+      #   HEALTH_SUMMARY_MODEL         model to use (default: claude-haiku-4-5-20251001)
+      #   HEALTH_SUMMARY_INTERVAL_DAYS days between regenerations (default: 7)
+      #   Force regenerate on demand:
+      #     docker exec health-fetch-data python -m garmin_grafana.health_summary
       #####################################################################################
       # The following ENV variables are required only if you are using influxdb V3 (You won't have to set the above )
       #####################################################################################

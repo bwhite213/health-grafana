@@ -37,17 +37,25 @@ USER_SEX = os.getenv("USER_SEX", "").strip()
 SYSTEM_PROMPT = """\
 You are an expert wellness doctor reviewing a patient's health data from \
 wearable devices and lab work. Provide a concise, actionable summary in \
-markdown format. \
-Structure your response with:
+HTML format. Use ONLY these HTML tags: <h3> for section headers, <ul> and \
+<li> for bullet points, <strong> for emphasis, <p> for paragraphs, \
+<span style="color:#73BF69"> for good values and \
+<span style="color:#FF6B6B"> for concerning values. \
+Do NOT include <!DOCTYPE>, <html>, <head>, or <body> tags. \
+Do NOT use markdown syntax (no # or ** or -). \
+Structure your response with these four sections:
 
-1. **Key Findings** — 3-5 bullet points highlighting what stands out \
+<h3>Key Findings</h3> — 3-5 bullet points highlighting what stands out \
 (good and bad), referencing specific values and their optimal ranges.
-2. **Trends** — note any improving or worsening patterns if historical \
+
+<h3>Trends</h3> — note any improving or worsening patterns if historical \
 data is available.
-3. **Recommendations** — 2-4 specific, actionable lifestyle changes \
+
+<h3>Recommendations</h3> — 2-4 specific, actionable lifestyle changes \
 ranked by expected impact. Be concrete (e.g., "increase zone 2 cardio \
 to 150 min/week" not "exercise more").
-4. **Watch List** — anything that needs attention on the next check.
+
+<h3>Watch List</h3> — anything that needs attention on the next check.
 
 Keep the summary under 400 words. Use plain language. Do not hedge \
 excessively — the patient wants clear guidance, not disclaimers. \
@@ -143,22 +151,43 @@ def _collect_data(client, config: dict) -> str:
 
 
 def _compute_data_hash(data_text: str) -> str:
-    """Hash the data to detect changes."""
+    """Hash the data to detect changes.
+
+    Strips timestamps from the text before hashing so that queries
+    returning the same values at different times produce the same hash.
+    This prevents regenerating summaries every fetch cycle when the
+    underlying health data hasn't actually changed.
+    """
+    import re
+    # Strip ISO timestamps and epoch nanoseconds that change every query
+    stripped = re.sub(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[^\s,\"]*", "T", data_text)
+    stripped = re.sub(r"\b\d{19}\b", "T", stripped)  # epoch nanos
+    data_text = stripped
     return hashlib.sha256(data_text.encode()).hexdigest()[:16]
 
 
-def _get_last_summary_hash(client, dashboard: str) -> str | None:
-    """Get the hash of the data used to generate the last summary."""
+def _get_last_summary_info(client, dashboard: str) -> tuple[str | None, datetime | None]:
+    """Get the hash and timestamp of the last summary for a dashboard."""
     try:
         result = client.query(
             f'SELECT last("data_hash") AS "hash" FROM "AIHealthSummary" WHERE "dashboard" = \'{dashboard}\''
         )
         rows = list(result.get_points())
         if rows:
-            return rows[0].get("hash")
+            ts = None
+            time_str = rows[0].get("time")
+            if time_str:
+                try:
+                    ts = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+                except (ValueError, TypeError):
+                    pass
+            return rows[0].get("hash"), ts
     except Exception:
         pass
-    return None
+    return None, None
+
+
+SUMMARY_INTERVAL_DAYS = int(os.getenv("HEALTH_SUMMARY_INTERVAL_DAYS", "7"))
 
 
 def _generate_summary(data_text: str, profile_line: str) -> str | None:
@@ -187,14 +216,11 @@ def _write_summary(influx_client, dashboard: str, summary: str, data_hash: str) 
     """Write the summary to InfluxDB.
 
     InfluxDB escapes newlines in string fields as literal ``\\n``, which
-    breaks markdown rendering in the Dynamic Text Grafana plugin. We
-    convert newlines to ``<br>`` (inline HTML that markdown renderers
-    pass through) before storing, so the plugin can render the summary
-    correctly without any client-side fixups.
+    breaks rendering in the Dynamic Text Grafana plugin. Since we now
+    request pure HTML from the LLM, we strip all newlines — HTML does
+    not need whitespace between elements.
     """
-    # Convert markdown newlines to <br> so InfluxDB's escaping doesn't
-    # break rendering. Double newlines (paragraph breaks) get <br><br>.
-    summary_flat = summary.replace("\n", "<br>")
+    summary_flat = summary.replace("\n", " ").replace("  ", " ")
     point = {
         "measurement": "AIHealthSummary",
         "time": datetime.now(tz=pytz.utc).isoformat(),
@@ -209,12 +235,18 @@ def _write_summary(influx_client, dashboard: str, summary: str, data_hash: str) 
     _log.info("Wrote AI health summary for dashboard=%s (%d chars)", dashboard, len(summary))
 
 
-def generate_summaries(influx_client) -> int:
+def generate_summaries(influx_client, force: bool = False) -> int:
     """
     Generate AI health summaries for all configured dashboards.
 
-    Returns the number of summaries generated (0 if all were stale or
-    the API key is missing).
+    Summaries are regenerated only when BOTH conditions are met:
+    1. The underlying data has changed (hash check).
+    2. The last summary is older than ``HEALTH_SUMMARY_INTERVAL_DAYS``
+       (default 7 days).
+
+    Pass ``force=True`` to bypass both checks and regenerate everything.
+
+    Returns the number of summaries generated.
     """
     if not ANTHROPIC_API_KEY:
         _log.info(
@@ -227,17 +259,30 @@ def generate_summaries(influx_client) -> int:
     if USER_AGE and USER_SEX:
         profile_line = f"The patient is a {USER_AGE}-year-old {USER_SEX}."
 
+    now = datetime.now(tz=pytz.utc)
     generated = 0
     for dashboard_key, config in DASHBOARD_CONFIGS.items():
         try:
             data_text = _collect_data(influx_client, config)
             data_hash = _compute_data_hash(data_text)
 
-            # Skip if data hasn't changed
-            last_hash = _get_last_summary_hash(influx_client, dashboard_key)
-            if last_hash == data_hash:
-                _log.debug("Data unchanged for %s — skipping summary regeneration", dashboard_key)
-                continue
+            if not force:
+                last_hash, last_ts = _get_last_summary_info(influx_client, dashboard_key)
+
+                # Skip if data hasn't changed
+                if last_hash == data_hash:
+                    _log.debug("Data unchanged for %s — skipping", dashboard_key)
+                    continue
+
+                # Skip if last summary is too recent
+                if last_ts is not None:
+                    age_days = (now - last_ts).total_seconds() / 86400
+                    if age_days < SUMMARY_INTERVAL_DAYS:
+                        _log.debug(
+                            "Summary for %s is %.1f days old (interval=%d) — skipping",
+                            dashboard_key, age_days, SUMMARY_INTERVAL_DAYS,
+                        )
+                        continue
 
             summary = _generate_summary(data_text, profile_line)
             if summary:
@@ -248,3 +293,20 @@ def generate_summaries(influx_client) -> int:
 
     _log.info("AI health summary generation complete: %d of %d dashboards updated", generated, len(DASHBOARD_CONFIGS))
     return generated
+
+
+if __name__ == "__main__":
+    """CLI: force-regenerate all summaries.
+
+    Usage (from inside the fetcher container):
+        python -m garmin_grafana.health_summary
+
+    Or locally:
+        INFLUXDB_HOST=localhost python -m garmin_grafana.health_summary
+    """
+    import sys
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    from . import garmin_fetch
+    n = generate_summaries(garmin_fetch.influxdbclient, force=True)
+    print(f"Force-regenerated {n} summaries")
+    sys.exit(0 if n > 0 else 1)
