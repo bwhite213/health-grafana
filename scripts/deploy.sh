@@ -36,6 +36,13 @@ cd "$REPO_ROOT"
 
 SERVICES=(health-fetch-data influxdb grafana homeassistant)
 
+# Last-deployed marker. The runtime clone doubles as the dev clone on
+# this server — the operator commits + pushes locally, so `git HEAD`
+# already equals `origin/main` before deploy.sh gets a chance to
+# detect a change. This file records what we most recently *built and
+# ran*, independent of whatever the working tree happens to point at.
+DEPLOY_STATE_FILE="${DEPLOY_STATE_FILE:-$REPO_ROOT/.deploy-state}"
+
 # Refuse to run if tracked files have uncommitted edits — a
 # `git reset --hard` on rollback would silently wipe them. Untracked
 # files are fine (git reset --hard preserves them).
@@ -61,16 +68,25 @@ target_sha="$(git rev-parse "origin/$DEPLOY_BRANCH")"
 log "checking out $DEPLOY_BRANCH at $target_sha..."
 git checkout -B "$DEPLOY_BRANCH" "$target_sha"
 
-if [[ "$rollback_sha" == "$target_sha" ]]; then
-  log "already at origin/$DEPLOY_BRANCH ($target_sha) — nothing to deploy"
-  # Put the clone back on whatever branch the operator was using.
+# Compare against the LAST-DEPLOYED sha, not the working tree's HEAD.
+# On this server the dev clone and the runtime clone are the same
+# directory, so HEAD races ahead of the last build any time the
+# operator commits locally before CI runs. `.deploy-state` is the
+# source of truth for "what's running right now."
+deployed_sha=""
+if [[ -f "$DEPLOY_STATE_FILE" ]]; then
+  deployed_sha="$(cat "$DEPLOY_STATE_FILE")"
+fi
+
+if [[ -n "$deployed_sha" && "$deployed_sha" == "$target_sha" ]]; then
+  log "already deployed $target_sha — nothing to rebuild"
   if [[ "$original_ref" != "$DEPLOY_BRANCH" ]]; then
     git checkout "$original_ref"
   fi
   exit 0
 fi
 
-log "deploying $rollback_sha -> $target_sha"
+log "deploying ${deployed_sha:-<unknown>} -> $target_sha (HEAD was $rollback_sha)"
 
 wait_for_healthy() {
   local deadline=$(( $(date +%s) + HEALTH_TIMEOUT ))
@@ -106,6 +122,9 @@ rollback() {
   if ! git reset --hard "$rollback_sha"; then
     die "git reset --hard $rollback_sha failed"
   fi
+  # Record what's actually running so the next deploy retries cleanly
+  # instead of short-circuiting on a stale target_sha.
+  echo "$rollback_sha" > "$DEPLOY_STATE_FILE"
   if ! docker compose -f "$COMPOSE_FILE" up -d --build; then
     die "rollback rebuild failed — stack is in an unknown state"
   fi
@@ -131,6 +150,11 @@ fi
 
 trap - ERR
 log "deploy OK — $target_sha is live"
+
+# Record the successfully-deployed SHA so the next run can short-circuit
+# cleanly without relying on `git HEAD`, which may race ahead when the
+# runtime clone doubles as the dev clone.
+echo "$target_sha" > "$DEPLOY_STATE_FILE"
 
 # Leave the clone on the deploy branch. The operator's pre-deploy ref
 # was saved as $original_ref; if it differs from the deploy branch,

@@ -25,6 +25,12 @@ docker-compose.yml
 # Claude Code local session state (hooks, slash commands, etc.)
 .claude/
 
+# Runtime state tracking the last-deployed commit; written by
+# scripts/deploy.sh, consumed on the next run to decide whether to
+# rebuild even when the working tree's HEAD already matches the
+# target.
+.deploy-state
+
 # Home Assistant runtime state. Commit only `configuration.yaml` (and
 # any other deliberately-tracked config files). Everything else HA
 # creates at runtime — SQLite history DB, auth store, logs, secrets,
