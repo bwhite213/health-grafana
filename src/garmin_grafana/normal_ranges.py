@@ -194,6 +194,69 @@ _ACWR_CONSTANT: dict[str, float | None] = {
     "borderline_min": 0.6, "borderline_max": 1.5,
 }
 
+# Oura Breathing Disturbance Index (events/hour) — lower is better.
+# Oura publishes BDI as correlated with (but not identical to) the clinical
+# AHI. Thresholds borrow AASM's AHI cutoffs used to classify obstructive
+# sleep apnea severity:
+#   AHI <5   = normal; BDI <5   treated as optimal
+#   AHI 5-14 = mild OSA; BDI 5-14 = attention (Oura's "pay attention")
+#   AHI >=15 = moderate/severe OSA; Oura's own guidance recommends medical
+#             evaluation for consistent BDI >=15.
+_BDI_CONSTANT: dict[str, float | None] = {
+    "normal_max": 5, "borderline_max": 15,
+    "lower_is_better": True,
+}
+
+# Overnight SpO2 average (%).
+# Source: American Thoracic Society clinical guidance + Mayo Clinic:
+#   >=95% = normal
+#   90-94% = mild nocturnal hypoxemia (discuss with doctor if persistent)
+#   <90% = moderate/urgent, warrants medical evaluation.
+_SPO2_AVG_OVERNIGHT_CONSTANT: dict[str, float | None] = {
+    "normal_min": 95, "normal_max": None,
+    "borderline_min": 90, "borderline_max": None,
+}
+
+# Respiratory rate during sleep (breaths/min) — age-independent in adults.
+# Source: standard adult vital signs (Harrison's Principles of Internal
+# Medicine); sleeping RR tracks the awake range ±2.
+#   12-20 = normal
+#   10-12 / 20-24 = borderline (early infection / cardiorespiratory change)
+#   <10 bradypnea, >24 tachypnea — both warrant evaluation.
+_BREATH_RATE_SLEEP_CONSTANT: dict[str, float | None] = {
+    "normal_min": 12, "normal_max": 20,
+    "borderline_min": 10, "borderline_max": 24,
+}
+
+# Sleep-onset latency (time to fall asleep) — STORED IN SECONDS to match
+# Oura's raw `latency` field and the dashboard's dthms unit.
+# Source: AASM clinical practice parameters (minutes converted to seconds):
+#   5-20 min  = normal (300-1200s)
+#   20-30 min = possible difficulty initiating sleep (1200-1800s)
+#   >30 min   = consistent with insomnia disorder (>1800s)
+#   2-5 min   = borderline low (120-300s)
+#   <2 min    = "pathologically short" — indicates sleep deprivation.
+_SLEEP_LATENCY_S_CONSTANT: dict[str, float | None] = {
+    "normal_min": 300, "normal_max": 1200,
+    "borderline_min": 120, "borderline_max": 1800,
+}
+
+# Lowest heart rate observed during sleep (bpm) — non-athlete population.
+# Sleeping minimum HR typically runs 3-5 bpm below resting HR.
+# Source: synthesis of Umetani 1998 HRV/HR cohort norms + AHA bradycardia
+# guidance:
+#   40-60 = normal for healthy non-athletes
+#   30-40 / 60-70 = borderline (trained athletes routinely sit in the low
+#                  band, which is benign; elevated band can indicate
+#                  illness, dehydration, or poor recovery)
+#   <30 or >70 = warrants evaluation in a non-athlete.
+# Athletes will consistently trigger the low yellow/red — that's expected
+# and not a reason to tune the band upward.
+_LOWEST_HR_SLEEP_CONSTANT: dict[str, float | None] = {
+    "normal_min": 40, "normal_max": 60,
+    "borderline_min": 30, "borderline_max": 70,
+}
+
 
 def _lookup_age_sex(profile: Profile, table: list) -> dict | None:
     for sex, lo, hi, ranges in table:
@@ -240,6 +303,11 @@ def resolve(profile: Profile) -> dict[str, dict]:
     out["systolic_bp"] = _BP_SYSTOLIC_CONSTANT
     out["diastolic_bp"] = _BP_DIASTOLIC_CONSTANT
     out["acwr"] = _ACWR_CONSTANT
+    out["bdi"] = _BDI_CONSTANT
+    out["spo2_avg_overnight"] = _SPO2_AVG_OVERNIGHT_CONSTANT
+    out["breath_rate_sleep"] = _BREATH_RATE_SLEEP_CONSTANT
+    out["sleep_latency_s"] = _SLEEP_LATENCY_S_CONSTANT
+    out["lowest_hr_sleep"] = _LOWEST_HR_SLEEP_CONSTANT
 
     return out
 
