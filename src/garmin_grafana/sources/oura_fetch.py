@@ -80,21 +80,52 @@ class OuraClient:
     def get_daily_readiness(self, date_str: str) -> dict[str, Any] | None:
         return self._daily_single("/daily_readiness", date_str)
 
-    def get_sleep_detail(self, date_str: str) -> dict[str, Any] | None:
-        """Return the main long_sleep record whose day == date_str."""
+    # Oura's /sleep endpoint returns every sleep-like session it detects in
+    # a day. The `type` field distinguishes the main night sleep from naps
+    # and brief rest periods:
+    #   - "long_sleep"  : main overnight sleep (what the app's Sleep screen shows)
+    #   - "sleep"       : legacy alias for long_sleep on older API versions
+    #   - "short_sleep" : naps (>10 min but significantly shorter than main)
+    #   - "late_nap"    : late-in-day rest periods the ring classifies as nap-ish
+    #   - "rest"        : awake rest periods, emitted separately from sleep-typed
+    #                     records; we filter these out of nap reporting.
+    _MAIN_SLEEP_TYPES = ("long_sleep", "sleep", None)
+    _NAP_TYPES = ("short_sleep", "late_nap")
+
+    def _fetch_sleep_sessions(self, date_str: str) -> list[dict[str, Any]]:
         end = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
         data = self._get("/sleep", {"start_date": date_str, "end_date": end})
+        return [s for s in data.get("data", []) if s.get("day") == date_str]
+
+    def get_sleep_detail(self, date_str: str) -> dict[str, Any] | None:
+        """Return the main long_sleep record whose day == date_str.
+
+        Naps and rest sessions are intentionally excluded — they land in
+        ``get_nap_sessions`` instead so the UnifiedSleep mirror and the
+        dashboard's "last night" stats stay anchored to the main session.
+        """
         candidates = [
-            s
-            for s in data.get("data", [])
-            if s.get("day") == date_str
-            and s.get("type") in ("long_sleep", "sleep", None)
+            s for s in self._fetch_sleep_sessions(date_str)
+            if s.get("type") in self._MAIN_SLEEP_TYPES
         ]
         if not candidates:
             return None
         # Pick the longest (main) sleep session for the day.
         candidates.sort(key=lambda s: s.get("total_sleep_duration") or 0, reverse=True)
         return candidates[0]
+
+    def get_nap_sessions(self, date_str: str) -> list[dict[str, Any]]:
+        """Return all nap-typed sleep sessions whose ``day`` == date_str.
+
+        Oura's ring is good at spotting naps; we store each as its own
+        OuraNap point (one per session, timestamped at bedtime_start) so
+        the dashboard can show them alongside the main sleep without
+        polluting the primary sleep metrics.
+        """
+        return [
+            s for s in self._fetch_sleep_sessions(date_str)
+            if s.get("type") in self._NAP_TYPES
+        ]
 
     def get_vo2_max(self, date_str: str) -> dict[str, Any] | None:
         """Return Oura's daily VO2 max record for ``date_str``, if present."""
@@ -184,6 +215,7 @@ def build_raw_oura_points(
     daily_spo2: dict | None = None,
     daily_stress: dict | None = None,
     enhanced_tags: list | None = None,
+    nap_sessions: list | None = None,
 ) -> list[dict[str, Any]]:
     """Emit the per-source ``Oura*`` measurements."""
     out: list[dict[str, Any]] = []
@@ -395,6 +427,44 @@ def build_raw_oura_points(
                 }
             )
 
+    if nap_sessions:
+        # One OuraNap point per detected nap. Timestamped at bedtime_start
+        # so multiple naps on the same day don't collide on the same
+        # timeline point. `sleep_type` tag lets the dashboard filter /
+        # differentiate short_sleep vs. late_nap if ever useful.
+        for nap in nap_sessions:
+            start_ts = nap.get("bedtime_start") or nap.get("bedtime_end")
+            if not start_ts:
+                continue
+            nap_fields = {
+                k: nap.get(k)
+                for k in (
+                    "total_sleep_duration",
+                    "time_in_bed",
+                    "awake_time",
+                    "deep_sleep_duration",
+                    "light_sleep_duration",
+                    "rem_sleep_duration",
+                    "efficiency",
+                    "latency",
+                    "average_heart_rate",
+                    "lowest_heart_rate",
+                    "average_hrv",
+                )
+                if nap.get(k) is not None
+            }
+            if not nap_fields:
+                continue
+            nap_tags = {**tags, "sleep_type": nap.get("type") or "short_sleep"}
+            out.append(
+                {
+                    "measurement": "OuraNap",
+                    "time": start_ts if isinstance(start_ts, str) else _iso(start_ts, day_ts),
+                    "tags": nap_tags,
+                    "fields": nap_fields,
+                }
+            )
+
     return out
 
 
@@ -424,6 +494,11 @@ def fetch_day(
     except Exception as err:  # noqa: BLE001
         _log.warning("Oura sleep fetch failed for %s: %s", date_str, err)
         sleep_detail = None
+    try:
+        nap_sessions = client.get_nap_sessions(date_str)
+    except Exception as err:  # noqa: BLE001
+        _log.warning("Oura nap fetch failed for %s: %s", date_str, err)
+        nap_sessions = None
     try:
         daily_activity = client.get_daily_activity(date_str)
     except Exception as err:  # noqa: BLE001
@@ -485,6 +560,7 @@ def fetch_day(
             daily_spo2=daily_spo2,
             daily_stress=daily_stress,
             enhanced_tags=enhanced_tags,
+            nap_sessions=nap_sessions,
         )
     )
 
@@ -515,11 +591,12 @@ def fetch_day(
         )
 
     _log.info(
-        "Oura: %d points for %s (sleep=%s activity=%s readiness=%s vo2=%s "
+        "Oura: %d points for %s (sleep=%s naps=%d activity=%s readiness=%s vo2=%s "
         "workouts=%d spo2=%s stress=%s tags=%d hr_samples=%d)",
         len(points),
         date_str,
         bool(sleep_detail),
+        len(nap_sessions or []),
         bool(daily_activity),
         bool(daily_readiness),
         bool(vo2_max),
