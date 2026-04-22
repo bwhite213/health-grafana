@@ -84,22 +84,28 @@ On your iPhone:
 
 Still in the iOS Companion app:
 
-1. Tap **Settings** (gear icon, bottom-right).
+1. Tap **Settings** (gear icon, bottom-right tab).
 2. **Companion App → Sensors**.
-3. Toggle on the HealthKit categories you want streamed. Useful ones:
-   - **Active Energy** (burned kcal today)
-   - **Steps**
+3. Scroll down to **HealthKit** and toggle it on.
+4. Tap **HealthKit Categories** and toggle on every metric you want
+   streamed. Recommended set (maps cleanly to what the dashboards
+   already query):
    - **Heart Rate**
    - **Resting Heart Rate**
    - **Heart Rate Variability (SDNN)**
+   - **Active Energy**
+   - **Basal Energy** (optional — lets us derive total calories)
+   - **Steps**
    - **Walking + Running Distance**
+   - **Apple Exercise Time**
    - **Sleep Analysis**
    - **Blood Oxygen**
    - **VO2 Max**
-4. iOS will prompt for HealthKit permission on each — allow.
-5. **Force-sync** by pulling down on the Companion app's Overview
-   screen; the sensors show up in HA under **Settings → Devices &
-   Services → Mobile App → <your device>**.
+5. iOS will pop a HealthKit permission sheet — tap **Allow All**
+   (or turn on each category individually).
+6. Back on the Overview screen, **pull down to force-sync**. The
+   sensors appear in HA under **Settings → Devices & Services →
+   Mobile App → <your device>** within 30–60 seconds.
 
 ### 6. Confirm data is flowing to InfluxDB
 
