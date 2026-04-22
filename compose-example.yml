@@ -112,9 +112,14 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    # Admin credentials come from override-default-vars.env — keeps the
+    # password out of this committed file and lets a grafana_data volume
+    # wipe re-seed the same login instead of falling back to admin/admin.
+    # Set GF_SECURITY_ADMIN_USER and GF_SECURITY_ADMIN_PASSWORD there;
+    # they default to admin/admin if the env file doesn't override.
+    env_file:
+      - override-default-vars.env
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_PLUGINS_PREINSTALL=marcusolsson-hourly-heatmap-panel,marcusolsson-dynamictext-panel
       - GF_DATE_FORMATS_FULL_DATE=MMM Do, YYYY - hh:mm:ss a
       - GF_DATE_FORMATS_INTERVAL_SECOND=hh:mm:ss a
