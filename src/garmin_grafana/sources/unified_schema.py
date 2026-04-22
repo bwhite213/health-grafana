@@ -56,6 +56,20 @@ def _drop_nones(fields: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in fields.items() if v is not None}
 
 
+def _as_float(v: Any) -> float | None:
+    """Coerce to float for rate/score fields.
+
+    Mirror of the _as_int helper used inside unified_activity_point.
+    Sources aren't consistent about rate types: Oura's
+    ``lowest_heart_rate`` is an int (e.g. 67), ``average_heart_rate`` a
+    float (77.625), Garmin's ``restingHeartRate`` an int. Once the field
+    is established as float in InfluxDB, subsequent int writes hit
+    ``partial write: field type conflict``. Coerce everything here so
+    the line-protocol output is stable regardless of the source.
+    """
+    return None if v is None else float(v)
+
+
 def _append_if_present(points: list, point: dict | None) -> None:
     """Append a point to ``points`` iff the point builder actually produced one.
 
@@ -109,11 +123,16 @@ def unified_sleep_point(
             "light_s": light_s,
             "rem_s": rem_s,
             "awake_s": awake_s,
-            "hrv_avg": hrv_avg,
-            "rhr": rhr,
-            "efficiency": efficiency,
-            "score": score,
-            "spo2_avg": spo2_avg,
+            # All rate-ish fields get coerced to float. Some sources pass
+            # ints (Oura lowest_heart_rate, Garmin restingHeartRate); the
+            # stored InfluxDB type was set to float on the first Oura
+            # average-HR write, so any int write now errors with
+            # ``field type conflict`` and the whole point is dropped.
+            "hrv_avg": _as_float(hrv_avg),
+            "rhr": _as_float(rhr),
+            "efficiency": _as_float(efficiency),
+            "score": _as_float(score),
+            "spo2_avg": _as_float(spo2_avg),
         }
     )
     if not fields:
@@ -139,10 +158,10 @@ def unified_heart_rate_point(
 ) -> dict[str, Any] | None:
     fields = _drop_nones(
         {
-            "rhr": rhr,
-            "hr_avg": hr_avg,
-            "hr_max": hr_max,
-            "hr_min": hr_min,
+            "rhr": _as_float(rhr),
+            "hr_avg": _as_float(hr_avg),
+            "hr_max": _as_float(hr_max),
+            "hr_min": _as_float(hr_min),
         }
     )
     if not fields:
@@ -223,7 +242,7 @@ def unified_readiness_point(
     time: datetime | str,
     score: float | None,
 ) -> dict[str, Any] | None:
-    fields = _drop_nones({"score": score})
+    fields = _drop_nones({"score": _as_float(score)})
     if not fields:
         return None
     return {
@@ -242,7 +261,7 @@ def unified_vo2_max_point(
     time: datetime | str,
     vo2_max: float | None,
 ) -> dict[str, Any] | None:
-    fields = _drop_nones({"vo2_max": vo2_max})
+    fields = _drop_nones({"vo2_max": _as_float(vo2_max)})
     if not fields:
         return None
     return {
@@ -270,10 +289,10 @@ def unified_workout_point(
     fields = _drop_nones(
         {
             "duration_s": duration_s,
-            "calories": calories,
-            "distance_m": distance_m,
-            "hr_avg": hr_avg,
-            "hr_max": hr_max,
+            "calories": _as_float(calories),
+            "distance_m": _as_float(distance_m),
+            "hr_avg": _as_float(hr_avg),
+            "hr_max": _as_float(hr_max),
             # Store intensity as a field (string) so it's still queryable even
             # though it's not numeric.
             "intensity": intensity,
@@ -317,7 +336,7 @@ def unified_stress_point(
     fields = _drop_nones(
         {
             "stress_high_s": stress_high_s,
-            "stress_avg": stress_avg,
+            "stress_avg": _as_float(stress_avg),
             "recovery_high_s": recovery_high_s,
         }
     )
