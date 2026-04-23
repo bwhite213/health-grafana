@@ -80,52 +80,72 @@ class OuraClient:
     def get_daily_readiness(self, date_str: str) -> dict[str, Any] | None:
         return self._daily_single("/daily_readiness", date_str)
 
-    # Oura's /sleep endpoint returns every sleep-like session it detects in
-    # a day. The `type` field distinguishes the main night sleep from naps
-    # and brief rest periods:
-    #   - "long_sleep"  : main overnight sleep (what the app's Sleep screen shows)
-    #   - "sleep"       : legacy alias for long_sleep on older API versions
-    #   - "short_sleep" : naps (>10 min but significantly shorter than main)
-    #   - "late_nap"    : late-in-day rest periods the ring classifies as nap-ish
-    #   - "rest"        : awake rest periods, emitted separately from sleep-typed
-    #                     records; we filter these out of nap reporting.
-    _MAIN_SLEEP_TYPES = ("long_sleep", "sleep", None)
-    _NAP_TYPES = ("short_sleep", "late_nap")
+    # Oura's /sleep endpoint returns every sleep-like session it detects
+    # in a day. The `type` field distinguishes kinds of sessions, but
+    # **Oura isn't fully consistent about naps**: we've seen a 20-minute
+    # midday nap come back with type="sleep" (not "short_sleep") when
+    # another long_sleep also exists for the same day. Empirically the
+    # safest classification is:
+    #   - MAIN sleep = the single longest session with a sleep-flavored
+    #     type (long_sleep / sleep / None). Everything else on the same
+    #     day, regardless of type, is a nap.
+    #   - NAP = any sleep-flavored session that isn't the main one AND
+    #     actually recorded non-zero asleep time (rules out pure `rest`
+    #     sessions with total_sleep_duration=0).
+    _SLEEP_FLAVORED_TYPES = ("long_sleep", "sleep", "short_sleep", "late_nap", None)
 
     def _fetch_sleep_sessions(self, date_str: str) -> list[dict[str, Any]]:
         end = (datetime.strptime(date_str, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
         data = self._get("/sleep", {"start_date": date_str, "end_date": end})
         return [s for s in data.get("data", []) if s.get("day") == date_str]
 
-    def get_sleep_detail(self, date_str: str) -> dict[str, Any] | None:
-        """Return the main long_sleep record whose day == date_str.
-
-        Naps and rest sessions are intentionally excluded — they land in
-        ``get_nap_sessions`` instead so the UnifiedSleep mirror and the
-        dashboard's "last night" stats stay anchored to the main session.
-        """
+    def _main_sleep_session(self, date_str: str) -> dict[str, Any] | None:
         candidates = [
             s for s in self._fetch_sleep_sessions(date_str)
-            if s.get("type") in self._MAIN_SLEEP_TYPES
+            if s.get("type") in self._SLEEP_FLAVORED_TYPES
         ]
         if not candidates:
             return None
-        # Pick the longest (main) sleep session for the day.
-        candidates.sort(key=lambda s: s.get("total_sleep_duration") or 0, reverse=True)
-        return candidates[0]
+        # Longest session is "main night". Tie-breaks favour `long_sleep`
+        # over the ambiguous bare `sleep` so a matched-duration nap can't
+        # impersonate the main record.
+        def _rank(s: dict[str, Any]) -> tuple[int, int]:
+            type_rank = 0 if s.get("type") == "long_sleep" else 1
+            return (-(s.get("total_sleep_duration") or 0), type_rank)
+        return sorted(candidates, key=_rank)[0]
+
+    def get_sleep_detail(self, date_str: str) -> dict[str, Any] | None:
+        """Return the main sleep record for ``date_str``.
+
+        Naps land in ``get_nap_sessions`` instead so the UnifiedSleep
+        mirror and the dashboard's "last night" stats stay anchored to
+        the main session.
+        """
+        return self._main_sleep_session(date_str)
 
     def get_nap_sessions(self, date_str: str) -> list[dict[str, Any]]:
-        """Return all nap-typed sleep sessions whose ``day`` == date_str.
+        """Return nap sessions for ``date_str`` — any sleep-flavored
+        record that ISN'T the main night sleep.
 
-        Oura's ring is good at spotting naps; we store each as its own
-        OuraNap point (one per session, timestamped at bedtime_start) so
-        the dashboard can show them alongside the main sleep without
-        polluting the primary sleep metrics.
+        Oura's `type` field isn't a reliable nap signal alone (a 20-min
+        midday nap can come back as `type="sleep"` when another
+        `long_sleep` exists). Classifying by "not the main session"
+        instead of by type catches those edge cases. `total_sleep_
+        duration > 0` filters out the legitimate `rest` sessions Oura
+        emits for awake rest periods.
         """
-        return [
-            s for s in self._fetch_sleep_sessions(date_str)
-            if s.get("type") in self._NAP_TYPES
-        ]
+        main = self._main_sleep_session(date_str)
+        main_id = main.get("id") if main else None
+        out: list[dict[str, Any]] = []
+        for s in self._fetch_sleep_sessions(date_str):
+            if s.get("id") == main_id:
+                continue
+            if s.get("type") not in self._SLEEP_FLAVORED_TYPES:
+                continue
+            if not (s.get("total_sleep_duration") or 0):
+                continue
+            out.append(s)
+        return out
 
     def get_vo2_max(self, date_str: str) -> dict[str, Any] | None:
         """Return Oura's daily VO2 max record for ``date_str``, if present."""
