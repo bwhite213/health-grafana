@@ -525,7 +525,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "green"
           },
           "custom": {
             "axisLabel": "",
@@ -684,7 +685,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "red"
           },
           "custom": {
             "drawStyle": "line",
@@ -1857,7 +1859,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "light-blue"
           },
           "custom": {
             "drawStyle": "line",
@@ -1982,7 +1985,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "yellow"
           },
           "custom": {
             "drawStyle": "line",
@@ -2406,6 +2410,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
           }
         },
         "overrides": []
@@ -2540,7 +2548,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "blue"
           },
           "custom": {
             "drawStyle": "line",
@@ -2659,7 +2668,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "orange"
           },
           "custom": {
             "drawStyle": "line",
@@ -2801,7 +2811,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "red"
           },
           "custom": {
             "drawStyle": "line",
@@ -2886,7 +2897,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "blue"
           },
           "custom": {
             "drawStyle": "bars",
@@ -3017,7 +3029,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "orange"
           },
           "custom": {
             "drawStyle": "line",
@@ -3277,7 +3290,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "orange"
           },
           "custom": {
             "axisLabel": "hours",
@@ -3492,7 +3506,8 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "fixed",
+            "fixedColor": "super-light-green"
           },
           "custom": {
             "drawStyle": "line",
@@ -3684,6 +3699,10 @@
                 "value": 24
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "light-blue"
           }
         },
         "overrides": [
@@ -3697,8 +3716,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -3707,12 +3726,16 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
               },
               {
                 "id": "custom.fillOpacity",
                 "value": 0
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               }
             ]
           }
@@ -3790,6 +3813,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
           }
         },
         "overrides": [
@@ -3803,8 +3830,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -3813,12 +3840,16 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
               },
               {
                 "id": "custom.fillOpacity",
                 "value": 0
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               }
             ]
           }
