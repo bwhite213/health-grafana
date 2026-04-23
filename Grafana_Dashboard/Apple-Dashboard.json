@@ -118,13 +118,34 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 40
+              },
+              {
+                "color": "green",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
               }
             ]
           },
           "thresholdsStyle": {
             "mode": "off"
+          },
+          "custom": {
+            "thresholdsStyle": {
+              "mode": "area"
+            }
           }
         },
         "overrides": []
@@ -181,13 +202,26 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000
+              },
+              {
+                "color": "green",
+                "value": 7500
               }
             ]
           },
           "thresholdsStyle": {
             "mode": "off"
+          },
+          "custom": {
+            "thresholdsStyle": {
+              "mode": "area"
+            }
           }
         },
         "overrides": []
@@ -328,7 +362,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "unit": "h",
@@ -337,8 +371,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 6
+              },
+              {
+                "color": "green",
+                "value": 7
+              },
+              {
+                "color": "yellow",
+                "value": 9
+              },
+              {
+                "color": "red",
+                "value": 10
               }
             ]
           }
@@ -565,7 +615,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "unit": "percent",
@@ -574,8 +624,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "green",
+                "value": 85
               }
             ]
           }
@@ -792,7 +850,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "unit": "bpm",
@@ -801,8 +859,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 40
+              },
+              {
+                "color": "green",
+                "value": 50
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
               }
             ]
           }
@@ -1124,7 +1198,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "area"
             }
           },
           "unit": null,
@@ -1133,8 +1207,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000
+              },
+              {
+                "color": "green",
+                "value": 7500
               }
             ]
           }

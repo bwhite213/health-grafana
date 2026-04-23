@@ -13,6 +13,10 @@ services:
     volumes:
       - ./garminconnect-tokens:/home/appuser/.garminconnect # (persistent tokens storage - garminconnect-tokens folder must be owned by 1000:1000) - should be './garminconnect-tokens:/root/.garminconnect' instead if you are using user: root
       - ./Grafana_Dashboard:/app/Grafana_Dashboard # fetcher rewrites normal-range threshold bands in these JSON files on startup based on USER_AGE / USER_SEX env vars. Must match the path mounted into the grafana service below so both containers see the same files.
+    ports:
+      # Optional on-demand AI summary regenerate endpoint. Only active
+      # when SUMMARY_WEBHOOK_TOKEN is set in override-default-vars.env.
+      - '8765:8765'
 
     # Secrets (Garmin credentials, Oura PAT, timezone, etc.) are loaded from
     # override-default-vars.env in the repo root. Copy the template from

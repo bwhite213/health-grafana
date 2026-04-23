@@ -149,6 +149,13 @@ DASHBOARD_DIR = os.getenv("DASHBOARD_DIR", "/app/Grafana_Dashboard")
 def main() -> None:
     normal_ranges.stamp_dashboards_from_env(DASHBOARD_DIR)
 
+    # Kick off the optional on-demand summary-regenerate HTTP endpoint
+    # as a daemon thread. Self-gates on SUMMARY_WEBHOOK_TOKEN, so a
+    # missing env var is a silent no-op (matches the behaviour of the
+    # healthchecks.io ping).
+    from . import summary_webhook  # noqa: PLC0415 - keeps import optional
+    summary_webhook.start()
+
     oura_client = _build_oura_client()
 
     # --- Login to Garmin (reuses the existing flow) ---
