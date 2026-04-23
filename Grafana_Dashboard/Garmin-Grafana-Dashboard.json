@@ -1008,7 +1008,7 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Steps 👟",
+          "displayName": "Steps \ud83d\udc5f",
           "mappings": [],
           "max": 15000,
           "min": 0,
@@ -13403,7 +13403,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": false
