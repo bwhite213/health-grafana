@@ -58,14 +58,14 @@
       },
       "id": 200,
       "options": {
-        "content": "{{{summary}}}<div style=\"margin-top:12px;padding-top:8px;border-top:1px solid #2a2a2a;font-size:11px;opacity:0.55;display:flex;justify-content:space-between;align-items:center;\"><span>Last generated <strong style=\"opacity:0.8\">{{formatTime time}}</strong></span><a href=\"http://192.168.167.45:8765/regenerate-summary\" target=\"_blank\" style=\"color:#5aa0ff;text-decoration:none;padding:2px 10px;border:1px solid #2a4a7a;border-radius:3px;\">\u21bb Regenerate now</a></div>",
-        "defaultContent": "<p><em>Waiting for AI summary. Set ANTHROPIC_API_KEY and wait for a fetch cycle, or click Regenerate once the key is loaded.</em></p><div style=\"margin-top:8px;font-size:11px;\"><a href=\"http://192.168.167.45:8765/regenerate-summary\" target=\"_blank\" style=\"color:#5aa0ff;text-decoration:none;padding:2px 10px;border:1px solid #2a4a7a;border-radius:3px;\">\u21bb Regenerate now</a></div>",
+        "content": "{{{summary}}}<div style=\"margin-top:12px;padding-top:8px;border-top:1px solid #2a2a2a;text-align:right;\"><a href=\"http://192.168.167.45:8765/regenerate-summary\" target=\"_blank\" style=\"color:#5aa0ff;text-decoration:none;font-size:11px;padding:2px 10px;border:1px solid #2a4a7a;border-radius:3px;\">\u21bb Regenerate now</a></div>",
+        "defaultContent": "<p><em>Waiting for AI summary. Set ANTHROPIC_API_KEY and wait for a fetch cycle, or click Regenerate.</em></p><div style=\"margin-top:8px;text-align:right;\"><a href=\"http://192.168.167.45:8765/regenerate-summary\" target=\"_blank\" style=\"color:#5aa0ff;text-decoration:none;font-size:11px;padding:2px 10px;border:1px solid #2a4a7a;border-radius:3px;\">\u21bb Regenerate now</a></div>",
         "editor": {
           "format": "auto",
           "language": "markdown"
         },
         "externalStyles": [],
-        "helpers": "Handlebars.registerHelper('formatTime', function(value) {\n  if (value == null) return '';\n  var ts = typeof value === 'number' ? value : Date.parse(value);\n  if (isNaN(ts)) return String(value);\n  var d = new Date(ts);\n  var weekday = d.toLocaleDateString('en-US', { weekday: 'long' });\n  var md     = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  var time   = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });\n  return weekday + ', ' + md + ' \\u00b7 ' + time;\n});",
+        "helpers": "",
         "renderMode": "everyRow",
         "status": "never",
         "styles": "",
