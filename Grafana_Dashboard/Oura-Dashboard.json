@@ -65,7 +65,7 @@
           "language": "markdown"
         },
         "externalStyles": [],
-        "helpers": "handlebars.registerHelper('formatTime', function(value) {\n  if (value == null) return '';\n  var ts = typeof value === 'number' ? value : Date.parse(value);\n  if (isNaN(ts)) return String(value);\n  var d = new Date(ts);\n  var weekday = d.toLocaleDateString('en-US', { weekday: 'long' });\n  var md     = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  var time   = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });\n  return weekday + ', ' + md + ' \\u00b7 ' + time;\n});",
+        "helpers": "Handlebars.registerHelper('formatTime', function(value) {\n  if (value == null) return '';\n  var ts = typeof value === 'number' ? value : Date.parse(value);\n  if (isNaN(ts)) return String(value);\n  var d = new Date(ts);\n  var weekday = d.toLocaleDateString('en-US', { weekday: 'long' });\n  var md     = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  var time   = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });\n  return weekday + ', ' + md + ' \\u00b7 ' + time;\n});",
         "renderMode": "everyRow",
         "status": "never",
         "styles": "",
@@ -3898,7 +3898,7 @@
         "defaultContent": "<div style=\"text-align:center; padding:4px; color:#808080; font-size:13px;\"><em>No recent OuraSleep data</em></div>",
         "everyRow": false,
         "externalStyles": [],
-        "helpers": "handlebars.registerHelper('formatTime', function(value) {\n  if (value == null) return '';\n  var ts = typeof value === 'number' ? value : Date.parse(value);\n  if (isNaN(ts)) return String(value);\n  var d = new Date(ts);\n  var weekday = d.toLocaleDateString('en-US', { weekday: 'long' });\n  var md = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  return weekday + ', ' + md + ', ' + d.getFullYear();\n});",
+        "helpers": "Handlebars.registerHelper('formatTime', function(value) {\n  if (value == null) return '';\n  var ts = typeof value === 'number' ? value : Date.parse(value);\n  if (isNaN(ts)) return String(value);\n  var d = new Date(ts);\n  var weekday = d.toLocaleDateString('en-US', { weekday: 'long' });\n  var md = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });\n  return weekday + ', ' + md + ', ' + d.getFullYear();\n});",
         "renderMode": "everyRow",
         "styles": ""
       },
