@@ -602,8 +602,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical sleep score (14d)"
             },
             "properties": [
               {
@@ -621,6 +621,39 @@
                 "value": {
                   "mode": "fixed",
                   "fixedColor": "#8a8a8a"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical efficiency (14d)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    4,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#7aa6c2"
                 }
               },
               {
@@ -804,8 +837,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical HRV (14d)"
             },
             "properties": [
               {
@@ -823,6 +856,39 @@
                 "value": {
                   "mode": "fixed",
                   "fixedColor": "#8a8a8a"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical lowest HR (14d)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    4,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#7aa6c2"
                 }
               },
               {
@@ -3316,8 +3382,8 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical total (14d)"
             },
             "properties": [
               {
@@ -3335,6 +3401,39 @@
                 "value": {
                   "mode": "fixed",
                   "fixedColor": "#8a8a8a"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical active (14d)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    4,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#7aa6c2"
                 }
               },
               {
