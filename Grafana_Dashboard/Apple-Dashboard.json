@@ -391,6 +391,10 @@
                 "value": 10
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
           }
         },
         "overrides": [
@@ -404,8 +408,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -414,8 +418,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -520,6 +528,9 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": [
@@ -533,8 +544,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -543,8 +554,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -636,6 +651,10 @@
                 "value": 85
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
           }
         },
         "overrides": [
@@ -649,8 +668,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -659,8 +678,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -742,6 +765,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "purple"
           }
         },
         "overrides": [
@@ -755,8 +782,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -765,8 +792,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -879,6 +910,10 @@
                 "value": 85
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
           }
         },
         "overrides": [
@@ -892,8 +927,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -902,8 +937,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -996,6 +1035,9 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": [
@@ -1009,8 +1051,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1019,8 +1061,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1090,6 +1136,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
           }
         },
         "overrides": [
@@ -1103,8 +1153,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1113,8 +1163,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1219,6 +1273,10 @@
                 "value": 7500
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
           }
         },
         "overrides": [
@@ -1232,8 +1290,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1242,8 +1300,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1325,6 +1387,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "orange"
           }
         },
         "overrides": [
@@ -1338,8 +1404,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1348,8 +1414,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1430,6 +1500,9 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": [
@@ -1443,8 +1516,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1453,8 +1526,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1535,6 +1612,9 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "palette-classic"
           }
         },
         "overrides": [
@@ -1548,8 +1628,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1558,8 +1638,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
@@ -1653,6 +1737,10 @@
                 "value": null
               }
             ]
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "super-light-green"
           }
         },
         "overrides": [
@@ -1666,8 +1754,8 @@
                 "id": "custom.lineStyle",
                 "value": {
                   "dash": [
-                    10,
-                    10
+                    8,
+                    6
                   ],
                   "fill": "dash"
                 }
@@ -1676,8 +1764,12 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#909090"
+                  "fixedColor": "#8a8a8a"
                 }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
               },
               {
                 "id": "custom.fillOpacity",
