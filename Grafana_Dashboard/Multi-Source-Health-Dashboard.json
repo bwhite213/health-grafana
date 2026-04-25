@@ -206,7 +206,22 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Mean (all sources)"
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
             },
             "properties": [
               {
@@ -221,6 +236,36 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -228,7 +273,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -363,8 +408,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "purple"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "ms",
@@ -415,6 +459,66 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -422,7 +526,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -692,7 +796,22 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Mean (all sources)"
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
             },
             "properties": [
               {
@@ -707,6 +826,36 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -714,7 +863,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -810,8 +959,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "red"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "bpm",
@@ -824,7 +972,68 @@
           },
           "unit": "bpm"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 9,
@@ -882,8 +1091,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "blue"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "steps",
@@ -955,6 +1163,66 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -962,7 +1230,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -1046,8 +1314,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "orange"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "kcal",
@@ -1098,6 +1365,66 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -1105,7 +1432,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -1200,8 +1527,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "blue"
+            "mode": "palette-classic"
           },
           "custom": {
             "axisLabel": "score",
@@ -1254,6 +1580,66 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -1261,7 +1647,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -1445,7 +1831,22 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Mean (all sources)"
+              "options": "Garmin"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Oura"
             },
             "properties": [
               {
@@ -1460,6 +1861,36 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Apple"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean (all sources)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "green"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical (14d)"
             },
             "properties": [
@@ -1467,7 +1898,7 @@
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
+                  "fixedColor": "green"
                 }
               },
               {
@@ -1653,7 +2084,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Percent difference between sources on the same day. Rows where pct_diff > 10 are worth investigating \u2014 likely a device wasn't worn, fell off, or had a bad reading.",
+      "description": "Cross-source disagreements \u226510% from the last time window. Cell color on Source A/B identifies which sources disagreed; % diff color highlights how big the disagreement is (green <15%, yellow \u226515%, orange \u226530%, red \u226550%). Sorted by biggest disagreement first. Anything above orange is worth investigating \u2014 usually means one source missed a workout / wasn't worn / had a sync gap.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1662,7 +2093,7 @@
           "custom": {
             "align": "auto",
             "cellOptions": {
-              "type": "color-background"
+              "type": "auto"
             },
             "inspect": false
           },
@@ -1671,22 +2102,217 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "transparent",
                 "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "When"
               },
               {
-                "color": "yellow",
-                "value": 10
-              },
-              {
-                "color": "red",
-                "value": 25
+                "id": "custom.width",
+                "value": 160
               }
             ]
           },
-          "unit": "percent"
-        },
-        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Metric"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Metric"
+              },
+              {
+                "id": "custom.width",
+                "value": 180
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Source_A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Source A"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Garmin": {
+                        "color": "blue",
+                        "index": 0
+                      },
+                      "Oura": {
+                        "color": "purple",
+                        "index": 1
+                      },
+                      "Apple": {
+                        "color": "orange",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Source_B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Source B"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "basic"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "Garmin": {
+                        "color": "blue",
+                        "index": 0
+                      },
+                      "Oura": {
+                        "color": "purple",
+                        "index": 1
+                      },
+                      "Apple": {
+                        "color": "orange",
+                        "index": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "value_a"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Value A"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "value_b"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Value B"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "abs_diff"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "|\u0394|"
+              },
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -1694,8 +2320,51 @@
             },
             "properties": [
               {
+                "id": "displayName",
+                "value": "% diff"
+              },
+              {
                 "id": "unit",
                 "value": "percent"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background",
+                  "mode": "gradient"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 15
+                    },
+                    {
+                      "color": "orange",
+                      "value": 30
+                    },
+                    {
+                      "color": "red",
+                      "value": 50
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -1710,15 +2379,16 @@
       "id": 9,
       "options": {
         "cellHeight": "sm",
+        "showHeader": true,
         "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
           "show": false
         },
-        "showHeader": true
+        "sortBy": [
+          {
+            "displayName": "% diff",
+            "desc": true
+          }
+        ]
       },
       "targets": [
         {
@@ -1726,7 +2396,7 @@
             "type": "influxdb",
             "uid": "garmin_influxdb"
           },
-          "query": "SELECT \"Metric\", \"Source_A\", \"Source_B\", \"value_a\", \"value_b\", \"abs_diff\", \"pct_diff\" FROM \"SourceDiscrepancy\" WHERE $timeFilter ORDER BY time DESC LIMIT 100",
+          "query": "SELECT \"Metric\", \"Source_A\", \"Source_B\", \"value_a\", \"value_b\", \"abs_diff\", \"pct_diff\" FROM \"SourceDiscrepancy\" WHERE $timeFilter AND \"pct_diff\" >= 10 ORDER BY time DESC LIMIT 50",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "table"
