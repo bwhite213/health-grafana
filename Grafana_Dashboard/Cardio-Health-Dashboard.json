@@ -582,10 +582,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical systolic (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -594,13 +601,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -745,10 +745,47 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Diastolic"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pulse"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical diastolic (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -757,13 +794,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -921,10 +951,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -933,13 +970,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1091,10 +1121,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1103,13 +1140,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1325,10 +1355,77 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Readiness Score"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HRV Factor %"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sleep Factor %"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Stress History %"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "purple"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical readiness (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1337,13 +1434,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1611,10 +1701,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical load (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1623,13 +1720,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1785,10 +1875,47 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "VO2 Max (Running)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "VO2 Max (Cycling)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1797,13 +1924,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1948,10 +2068,62 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Fitness Age"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Chronological Age"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Achievable"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical fitness age (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1960,13 +2132,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2141,10 +2306,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical RHR (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2153,13 +2325,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2293,10 +2458,47 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "LT Heart Rate (Running)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "LT Speed (Running)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical LT HR (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2305,13 +2507,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2468,10 +2663,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2480,13 +2682,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {

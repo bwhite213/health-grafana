@@ -603,9 +603,46 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Sleep Score"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Efficiency"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical sleep score (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -614,13 +651,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -640,20 +670,20 @@
             },
             "properties": [
               {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    4,
-                    4
-                  ],
-                  "fill": "dash"
-                }
-              },
-              {
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#7aa6c2"
+                  "fixedColor": "orange"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    6
+                  ],
+                  "fill": "dash"
                 }
               },
               {
@@ -780,30 +810,6 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byName",
-              "options": "HRV (ms)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "ms"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Lowest HR (bpm)"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "bpm"
-              }
-            ]
-          },
-          {
-            "matcher": {
               "id": "byRegexp",
               "options": "Your typical.*"
             },
@@ -838,9 +844,46 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "HRV (ms)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lowest HR (bpm)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical HRV (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -849,13 +892,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -875,20 +911,20 @@
             },
             "properties": [
               {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    4,
-                    4
-                  ],
-                  "fill": "dash"
-                }
-              },
-              {
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#7aa6c2"
+                  "fixedColor": "orange"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    6
+                  ],
+                  "fill": "dash"
                 }
               },
               {
@@ -2056,10 +2092,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical SpO2 (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "light-blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2068,13 +2111,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2224,10 +2260,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical BDI (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "yellow"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2236,13 +2279,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2806,10 +2842,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical readiness (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2818,13 +2861,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -2956,10 +2992,47 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Deviation"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Trend deviation"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical deviation (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -2968,13 +3041,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -3232,10 +3298,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical steps (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -3244,13 +3317,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -3383,9 +3449,46 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Total"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Active"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Your typical total (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -3394,13 +3497,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -3420,20 +3516,20 @@
             },
             "properties": [
               {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    4,
-                    4
-                  ],
-                  "fill": "dash"
-                }
-              },
-              {
                 "id": "color",
                 "value": {
                   "mode": "fixed",
-                  "fixedColor": "#7aa6c2"
+                  "fixedColor": "orange"
+                }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    8,
+                    6
+                  ],
+                  "fill": "dash"
                 }
               },
               {
@@ -3929,10 +4025,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -3941,13 +4044,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -4099,10 +4195,17 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -4111,13 +4214,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -4213,10 +4309,17 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -4225,13 +4328,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {

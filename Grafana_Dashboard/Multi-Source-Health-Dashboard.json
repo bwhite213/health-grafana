@@ -205,10 +205,32 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Mean (all sources)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -217,13 +239,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -399,10 +414,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -411,13 +433,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -676,10 +691,32 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Mean (all sources)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -688,13 +725,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -924,10 +954,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -936,13 +973,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1067,10 +1097,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1079,13 +1116,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1223,10 +1253,17 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Your typical (14d)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1235,13 +1272,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
@@ -1414,10 +1444,32 @@
           },
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": "/Your typical.*/"
+              "id": "byName",
+              "options": "Mean (all sources)"
             },
             "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Your typical (14d)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8a8a8a"
+                }
+              },
               {
                 "id": "custom.lineStyle",
                 "value": {
@@ -1426,13 +1478,6 @@
                     6
                   ],
                   "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#8a8a8a"
                 }
               },
               {
