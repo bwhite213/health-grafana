@@ -45,6 +45,16 @@ OURA_ENABLED = os.getenv("OURA_ENABLED", "True" if OURA_TOKEN else "False").lowe
 )
 DISCREPANCY_LOOKBACK_DAYS = int(os.getenv("DISCREPANCY_LOOKBACK_DAYS", "7"))
 
+# How many days back the idle-cycle Oura refetch sweeps. Set to 7 so a
+# week of fetcher downtime self-heals on the next successful run without
+# needing a manual MANUAL_START_DATE bulk import. Per-day Oura calls are
+# ~10 (sleep / activity / readiness / spo2 / stress / vo2 / workouts /
+# tags / hr-intraday); 7 days × ~10 = ~70 calls per cycle, ~6700/day at
+# 15-min cadence — still well under the 5000-cap once you account for
+# `last()`-style endpoints that short-circuit when there's no new data.
+# Bump down via env var if you ever rate-limit.
+OURA_IDLE_LOOKBACK_DAYS = int(os.getenv("OURA_IDLE_LOOKBACK_DAYS", "7"))
+
 # Dead-man's switch. Set to a healthchecks.io check URL (or compatible).
 # Orchestrator hits "${URL}/start" at cycle begin, the bare URL at cycle end,
 # and "${URL}/fail" on unhandled exceptions. If no ping arrives within the
@@ -252,15 +262,20 @@ def main() -> None:
                 "No new Garmin data found. Watch/InfluxDB sync time: %s UTC",
                 last_watch_sync_time_UTC,
             )
-            # Still run Oura daily — the user may have worn the ring without the watch.
+            # Still run Oura daily — the user may have worn the ring without
+            # the watch. Sweep OURA_IDLE_LOOKBACK_DAYS back from today (default
+            # 7) so a week-long fetcher outage / network issue self-heals on
+            # the next successful cycle without anyone having to trigger a
+            # manual bulk backfill. InfluxDB writes are idempotent on
+            # (measurement, tags, time) so re-fetching unchanged days is a
+            # no-op write-side; the cost is purely Oura API calls.
             if oura_client is not None:
-                today_local = (datetime.now(tz=pytz.utc) + local_timediff).strftime(
-                    "%Y-%m-%d"
-                )
-                yday_local = (
-                    datetime.now(tz=pytz.utc) + local_timediff - timedelta(days=1)
+                today_local_dt = datetime.now(tz=pytz.utc) + local_timediff
+                end_str = today_local_dt.strftime("%Y-%m-%d")
+                start_str = (
+                    today_local_dt - timedelta(days=OURA_IDLE_LOOKBACK_DAYS - 1)
                 ).strftime("%Y-%m-%d")
-                _oura_fetch_range(oura_client, yday_local, today_local)
+                _oura_fetch_range(oura_client, start_str, end_str)
                 _run_discrepancy_pass()
                 _run_health_summaries()
 
