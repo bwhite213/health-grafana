@@ -87,7 +87,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "ApoB is the single best predictor of atherosclerotic cardiovascular disease. Performance range: 50-80 mg/dL.",
+      "description": "ApoB counts every artery-clogging (atherogenic) lipoprotein particle — one ApoB molecule per LDL, VLDL and remnant particle — making it the single best predictor of heart-attack risk, more reliable than LDL-C. For a 35-year-old man focused on long-term prevention, aim for 80 mg/dL or below (optimal 50-80); 90+ is the conventional 'high' cutoff. Lower is better, with no level too low.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -174,7 +174,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "LDL cholesterol. Lower is better for cardiovascular risk. Standard range 40-150.",
+      "description": "LDL ('bad' cholesterol) is the cholesterol carried in artery-clogging particles; it drives plaque buildup over decades. Standard lab range is 40-150 mg/dL, but for a 35-year-old man playing the long game, under ~100 is preferable and under 70 is ideal for aggressive prevention. Cross-check with ApoB — ApoB is the more reliable risk number.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -253,7 +253,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "HDL cholesterol \u2014 protective. Higher is better. Performance range: 56-100 mg/dL. Cardio exercise is the most effective way to raise HDL.",
+      "description": "HDL ('good' cholesterol) helps clear cholesterol out of artery walls, so higher is generally protective. For a man, 40 mg/dL is the minimum and the optimal window is 56-100. Cardio exercise, healthy fats and not smoking raise it. Very high HDL (>100) is not extra protective and can occasionally signal other issues.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -332,7 +332,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Triglycerides. Performance range: 35-90 mg/dL.",
+      "description": "Triglycerides are the main fat circulating in blood; high levels track with excess carbs/alcohol, insulin resistance and metabolic risk. Standard 'normal' is under 150 mg/dL, but the optimal window for a healthy 35-year-old man is 35-90. Best measured fasting — a recent meal inflates the number.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -415,7 +415,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Total Cholesterol. Standard range 100-240 mg/dL. Context matters \u2014 high total chol with high HDL is different from high total chol with high LDL.",
+      "description": "Total cholesterol sums HDL + LDL + a fraction of triglycerides \u2014 a blunt number on its own. Context matters: a high total driven by high HDL is benign, while a high total driven by LDL is the real concern. For a 35-year-old man, lean on ApoB and the LDL/HDL split rather than this figure alone. Standard range 100-240 mg/dL.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -494,7 +494,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Remnant Cholesterol. Performance range: 0-20 mg/dL. Emerging marker \u2014 remnant particles are highly atherogenic.",
+      "description": "Remnant cholesterol is the cholesterol in triglyceride-rich 'leftover' particles (VLDL/IDL), increasingly recognized as highly artery-clogging independent of LDL. Calculated as total minus HDL minus LDL. For a 35-year-old man, keep it under 20 mg/dL; rising values usually track with triglycerides and insulin resistance.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -586,7 +586,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Total Chol/HDL Ratio. Performance range: 0-3. Lower is better.",
+      "description": "This ratio (total cholesterol divided by HDL) is a quick cardiovascular-risk snapshot — it improves when HDL rises or LDL falls. For a man, under 3.5 is good and under 3 is optimal; 5 or above signals elevated risk. Lower is better.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -665,7 +665,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Triglycerides/HDL Ratio. Performance range: 0-1.25. Strong insulin resistance marker \u2014 lower is better.",
+      "description": "One of the best low-cost proxies for insulin resistance \u2014 a high ratio means lots of small dense LDL and poorer metabolic health. For a 35-year-old man, under 1.5 is good and under 1.25 is optimal; above 2-3 suggests insulin resistance worth addressing with diet and exercise. Lower is better.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -744,7 +744,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "LDL/ApoB Ratio. Performance range: 1.35-1.65. Indicates LDL particle size \u2014 higher ratio = larger (less atherogenic) particles.",
+      "description": "This ratio estimates average LDL particle size. A higher ratio means larger, fluffier, less dangerous particles; a lower ratio means small dense LDL that penetrates artery walls more easily. For a 35-year-old man, 1.35-1.65 is the favorable zone.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -844,7 +844,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "hs-CRP \u2014 top cardiovascular inflammation marker. Performance range: 0-1 mg/L (low risk). AHA: <1 low risk, 1-3 moderate, >3 high risk.",
+      "description": "High-sensitivity C-reactive protein measures low-grade, body-wide inflammation \u2014 a key amplifier of cardiovascular risk. AHA bands: under 1 mg/L low risk, 1-3 moderate, over 3 high. For a healthy 35-year-old man, aim under 1. It spikes transiently with infections, injuries or hard workouts in the days before a draw, so re-test before reading much into a single high value.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -923,7 +923,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Vitamin D. Performance range: 55-80 ng/mL. Affects cardiovascular function, immune health, testosterone production.",
+      "description": "Vitamin D (25-hydroxy) supports immune function, bone health, mood and testosterone production. Standard sufficiency is 30+ ng/mL, but the optimal window for a 35-year-old man is 55-80. Most people in northern climates run low through winter; supplementation usually closes the gap. Above ~100 risks toxicity.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1010,7 +1010,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Ferritin (iron stores). Performance range: 100-400 ng/mL. Too low = fatigue/anemia; too high = inflammation/iron overload.",
+      "description": "Ferritin reflects the body's iron stores. For an adult man, 30+ ng/mL avoids deficiency and the optimal window is 100-400. Low ferritin causes fatigue and poor endurance; high ferritin can mean iron overload (hemochromatosis is more common in men) or simply inflammation, since ferritin also rises as an inflammatory marker — cross-check with hs-CRP.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1097,7 +1097,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Creatinine (kidney function). Performance range: 0.8-1.1 mg/dL.",
+      "description": "Creatinine is a muscle-breakdown waste product the kidneys filter out, making it a standard kidney-function marker. For a 35-year-old man, 0.8-1.1 mg/dL is optimal and up to ~1.2 is normal. Mildly high readings are common in muscular men or after a hard workout or dehydration — an eGFR calculation gives a fuller picture of kidney function.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1180,7 +1180,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Albumin (liver function / nutrition). Performance range: 4-5 g/dL.",
+      "description": "Albumin is the most abundant blood protein, made by the liver; it reflects liver synthesis, protein nutrition and hydration. For a 35-year-old man, 4-5 g/dL is optimal. Low albumin can signal liver or kidney issues or poor protein intake; a slightly high value usually just means dehydration.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1280,7 +1280,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Total Testosterone. Performance range: 700-1100 ng/dL. Directly impacts cardiovascular recovery, body composition, and energy.",
+      "description": "Total testosterone is the sum of bound and free testosterone — the primary male sex hormone, driving muscle, energy, mood, libido and recovery. The standard adult-male lab range is 200-800 ng/dL; the athletic-optimal target here is 700-1100. For a 35-year-old man, readings in the 200s-400s, though technically 'normal', sit low and are worth discussing with a doctor alongside any symptoms.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1367,7 +1367,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Free Testosterone. Performance range: 120-180 pg/mL. The bioavailable fraction \u2014 more actionable than total T.",
+      "description": "Free testosterone is the small unbound fraction that is actually biologically active \u2014 often more informative than total T, especially when SHBG is abnormal. Lab range 46-224 pg/mL; optimal target 120-180. For a 35-year-old man, a free-T below ~120 alongside symptoms like low energy, low libido or poor recovery is worth a clinical conversation.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1454,7 +1454,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Estrogen. Performance range: 20-30 pg/mL. SHBG performance range: 30-50 nmol/L.",
+      "description": "Estrogen (estradiol) — men need a moderate amount — supports bone density, libido and mood; the male optimal is 20-30 pg/mL, with both too-low and too-high causing problems. SHBG (sex hormone-binding globulin) is the protein that binds testosterone and estrogen, so higher SHBG means less free hormone available. For a 35-year-old man, SHBG of 30-50 nmol/L is the target — high SHBG can drag free testosterone down even when total T looks fine.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1534,7 +1534,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "TSH (Thyroid Stimulating Hormone). Performance range: 0.5-2.5 uIU/mL.",
+      "description": "TSH is the pituitary's signal to the thyroid — it rises when the thyroid is underactive and falls when overactive, so it reads inversely to thyroid output. The lab range is wide (0.45-4.5 uIU/mL); optimal for a 35-year-old man is 0.5-2.5. A TSH creeping above ~2.5-3 alongside fatigue or weight changes is worth re-checking with Free T3/T4.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1617,7 +1617,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Free T3 (active thyroid hormone). Performance range: 3.4-4.4 pg/mL. Drives metabolic rate and cardiovascular efficiency.",
+      "description": "Free T3 is the active thyroid hormone that actually sets metabolic rate, body temperature and energy — the most functional thyroid marker. For a 35-year-old man, 3.4-4.4 pg/mL is optimal; a low Free T3 despite a normal TSH can explain fatigue, cold intolerance and a sluggish metabolism.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1717,7 +1717,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Fructosamine — average blood glucose over the past 2-3 weeks (glycated serum proteins). A shorter-term companion to HbA1c. Performance range: 210-260 umol/L; lab reference 205-285.",
+      "description": "Fructosamine measures the glycation (sugar-coating) of blood proteins, reflecting average glucose over the past 2-3 weeks — a shorter-window companion to HbA1c. For a 35-year-old man, 210-260 umol/L is optimal (lab reference 205-285); rising values mean recent average blood sugar is climbing, an early metabolic-health flag worth catching before it becomes prediabetes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1804,7 +1804,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Vitamin B12 — supports nerve function and red blood cell formation. Performance range: 400-900 pg/mL; lab reference 232-1245.",
+      "description": "Vitamin B12 is essential for nerve function, red blood cell production and energy metabolism; the body can't make it, so it comes from animal foods or supplements. For a 35-year-old man, 400-900 pg/mL is optimal — well above the 232 deficiency threshold. Low B12 causes fatigue, tingling and brain fog, and is common in vegetarians/vegans and long-term antacid users.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1891,7 +1891,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Uric Acid — elevated levels raise gout and cardiovascular/metabolic risk; lower is generally better. Performance range: 4-6 mg/dL; lab reference 3.4-7.",
+      "description": "Uric acid is the waste product of purine breakdown; high levels can crystallize in joints (gout) and are linked to high blood pressure and metabolic risk. For a 35-year-old man, 4-6 mg/dL is optimal and up to ~7 is the conventional ceiling. High readings track with red meat, alcohol, fructose and excess weight; lower is generally better.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1974,7 +1974,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "GGT (gamma-glutamyl transferase) — liver enzyme; a sensitive marker of liver stress, bile-duct issues, and alcohol load. Lower is better. Performance range: 10-40 U/L; lab reference 0-71.",
+      "description": "GGT (gamma-glutamyl transferase) is a liver enzyme and a sensitive early marker of liver stress, bile-duct problems and alcohol load — it's also an independent oxidative-stress and cardiovascular risk signal. For a 35-year-old man, 10-40 U/L is optimal; values rising toward the 71 ceiling warrant a look at alcohol intake and metabolic health. Lower is better.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2053,7 +2053,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Alkaline Phosphatase (ALP) — enzyme from liver and bone; abnormal levels can flag liver/bile-duct or bone turnover issues. Performance range: 50-100 U/L; lab reference 40-129.",
+      "description": "ALP is an enzyme produced mainly by the liver and bones. In a healthy adult man it mostly reflects liver and bile-duct health; abnormal levels can flag obstructed bile flow or unusual bone turnover. For a 35-year-old man, 50-100 U/L is the optimal window, with 40-129 the broad normal range. Low ALP is uncommon and can hint at a zinc or nutritional deficiency.",
       "fieldConfig": {
         "defaults": {
           "color": {
