@@ -143,6 +143,7 @@
         }
       ],
       "title": "Systolic BP",
+      "description": "Systolic blood pressure (top number) in mmHg — pressure when the heart contracts. American Heart Association adult ranges: Normal <120, Elevated 120–129, Stage 1 hypertension 130–139, Stage 2 ≥140.",
       "type": "stat"
     },
     {
@@ -206,6 +207,7 @@
         }
       ],
       "title": "Diastolic BP",
+      "description": "Diastolic blood pressure (bottom number) in mmHg — pressure when the heart relaxes between beats. AHA adult ranges: Normal <80, Stage 1 hypertension 80–89, Stage 2 ≥90.",
       "type": "stat"
     },
     {
@@ -274,7 +276,8 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "Training Readiness",
+      "title": "Training Readiness (0–100)",
+      "description": "Garmin's daily score for how prepared your body is to train. Combines sleep, HRV, recent training load, stress, and recovery. 0–24 Poor, 25–49 Low, 50–74 Moderate, 75–89 High, 90–100 Prime.",
       "type": "stat"
     },
     {
@@ -342,7 +345,8 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "VO2 Max",
+      "title": "VO2 Max (ml/kg/min)",
+      "description": "Cardiorespiratory fitness — maximum oxygen your body can use during exercise, in ml/kg/min. Garmin estimates from outdoor cardio with HR. Higher is fitter; age- and sex-adjusted bands are auto-stamped by the fetcher.",
       "_normalRangeMetric": "vo2_max",
       "type": "stat"
     },
@@ -410,7 +414,8 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "Fitness Age",
+      "title": "Fitness Age (years)",
+      "description": "Garmin's estimate of how your cardiovascular fitness compares to population norms, expressed as an age. Lower than your real age = good (you're fitter than average for your age). Driven mainly by VO2 max, resting HR, and activity level.",
       "type": "stat"
     },
     {
@@ -888,7 +893,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Weekly cumulative training load. Trend direction matters: rising = building fitness, falling = detraining or tapering. Dashed line = your 14-day rolling typical.",
+      "description": "Garmin's weekly cumulative training load — a unitless EPOC-based stress score summed over the past 7 days. Absolute number is arbitrary; trend direction is what matters. Rising = building fitness, falling = detraining or tapering. Dashed line = your 14-day rolling typical.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2600,7 +2605,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Garmin Endurance Score \u2014 long-term aerobic capacity composite. Dashed line = your 14-day rolling typical.",
+      "description": "Garmin Endurance Score (unitless, 0\u20131000+ scale) \u2014 composite of VO2 max, long-duration training history, and aerobic activity volume. Updates slowly; trend > absolute value. Dashed line = your 14-day rolling typical.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2750,7 +2755,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Hill Score with strength vs endurance breakdown. Overall score shows climbing ability composite; the components tell you what to train.",
+      "description": "Garmin Hill Score (unitless, 0–100) — your climbing ability. Overall = composite; Strength = how powerfully you climb short steep efforts; Endurance = how long you can sustain climbs. A gap between Strength and Endurance tells you which to train.",
       "fieldConfig": {
         "defaults": {
           "color": {

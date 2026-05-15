@@ -25,6 +25,7 @@
     {
       "id": 2,
       "title": "Latest sleep",
+      "description": "Most recent sleep duration recorded by Apple (HealthKit). Grafana formats raw seconds into hours and minutes automatically.",
       "type": "stat",
       "datasource": {
         "type": "influxdb",
@@ -243,7 +244,8 @@
     },
     {
       "id": 5,
-      "title": "VO2 max",
+      "title": "VO2 max (ml/kg/min)",
+      "description": "Cardiorespiratory fitness — maximum oxygen your body can use during exercise, in millilitres per kilogram per minute. Higher is fitter. Apple estimates this from outdoor walking/running with Watch HR data.",
       "type": "stat",
       "datasource": {
         "type": "influxdb",
@@ -449,6 +451,7 @@
     {
       "id": 8,
       "title": "Sleep stages (stacked)",
+      "description": "Nightly hours stacked by stage. Deep = physical recovery, REM = mental recovery/dreaming, Light = transitional, Awake = time awake in bed. Stage detection comes from the Apple Watch's HR + motion model.",
       "type": "timeseries",
       "datasource": {
         "type": "influxdb",
@@ -708,7 +711,8 @@
     },
     {
       "id": 10,
-      "title": "Overnight HRV (SDNN)",
+      "title": "Overnight HRV (SDNN, ms)",
+      "description": "Heart Rate Variability — the millisecond-level variation between heartbeats while you sleep, measured as SDNN (standard deviation of NN intervals). Higher values generally signal better autonomic recovery and lower stress; trends matter more than any single night.",
       "type": "timeseries",
       "datasource": {
         "type": "influxdb",
@@ -1680,7 +1684,8 @@
     },
     {
       "id": 21,
-      "title": "VO2 max",
+      "title": "VO2 max trend (ml/kg/min)",
+      "description": "Long-term VO2 max trend from Apple. This metric updates slowly — Apple needs multiple outdoor cardio sessions before it nudges. A rising trend means cardiorespiratory fitness is improving; reference bands depend on age/sex (see normal_ranges.py).",
       "type": "timeseries",
       "datasource": {
         "type": "influxdb",
