@@ -1716,7 +1716,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "How long it took to fall asleep after going to bed.",
+      "description": "Sleep onset latency — how long it took to fall asleep after going to bed. 5–20 min is healthy; under 5 min may signal sleep debt, over 30 min may signal trouble winding down. Displayed as minutes.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -1788,7 +1788,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "Sleep latency",
+      "title": "Sleep latency (time to fall asleep)",
       "type": "stat"
     },
     {
@@ -1869,7 +1869,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "Avg breath rate",
+      "title": "Avg breath rate (breaths/min)",
       "type": "stat"
     },
     {
@@ -2000,7 +2000,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "BDI (last night)",
+      "title": "Breathing Disturbance Index (last night)",
       "type": "stat"
     },
     {
@@ -2361,6 +2361,7 @@
       "id": 202,
       "type": "stat",
       "title": "Naps in range",
+      "description": "Number of daytime naps Oura detected within the dashboard's selected time range.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
@@ -2420,6 +2421,7 @@
       "id": 203,
       "type": "stat",
       "title": "Total nap time",
+      "description": "Sum of all detected nap durations across the selected time range.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
@@ -2479,6 +2481,7 @@
       "id": 204,
       "type": "stat",
       "title": "Avg nap length",
+      "description": "Average duration per nap. ~20–30 min is power-nap territory; >60 min crosses into a sleep cycle and can produce grogginess.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
@@ -2538,6 +2541,7 @@
       "id": 205,
       "type": "stat",
       "title": "Longest nap",
+      "description": "Longest single nap detected in the selected time range.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
@@ -2667,6 +2671,7 @@
       "id": 207,
       "type": "piechart",
       "title": "Nap type mix",
+      "description": "Breakdown of detected naps by Oura's sleep_type classification (e.g. nap, long_sleep, rest). Helps spot whether the algorithm is logging rest periods as naps vs proper naps.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
@@ -3827,7 +3832,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Time Oura classified as high-stress today.",
+      "description": "Total daytime hours Oura classified as high-stress today (elevated HR, low HRV, body temperature deviation). Sustained values above ~3h/day signal accumulating allostatic load.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -3885,7 +3890,7 @@
         "type": "influxdb",
         "uid": "garmin_influxdb"
       },
-      "description": "Time Oura classified as high-recovery today.",
+      "description": "Total daytime hours Oura classified as high-recovery today (low HR, high HRV, restful state — e.g. naps, meditation, deep rest). More is better; recovery hours buffer against stress hours.",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -4111,7 +4116,8 @@
     {
       "id": 210,
       "type": "timeseries",
-      "title": "Avg breath rate during sleep",
+      "title": "Avg breath rate during sleep (breaths/min)",
+      "description": "Nightly average respiratory rate during sleep, breaths per minute. Adults: ~12–20 bpm typical. Persistent rises of 1–2 bpm over your baseline can precede illness onset by 24–48 hours. Dashed line is your 14-day rolling typical.",
       "datasource": {
         "type": "influxdb",
         "uid": "garmin_influxdb"
