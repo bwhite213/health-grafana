@@ -37,6 +37,7 @@ docker-compose.yml
 # UI-created automations — stays local and gets recreated on first
 # boot or migrated via docs/home-assistant-setup.md.
 homeassistant-config/.storage/
+homeassistant-config/.cache/
 homeassistant-config/.cloud/
 homeassistant-config/.HA_VERSION
 homeassistant-config/home-assistant*.log*
